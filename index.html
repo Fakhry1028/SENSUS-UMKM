@@ -690,9 +690,10 @@
 
       const displayData = [...dataArray].reverse();
       displayData.forEach(item => {
-        const isDraft = item.status_data === 'Draft';
-        const isFinal = item.status_data === 'Final';
-        const badgeClass = isDraft ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300';
+        // PERBAIKAN: Deteksi status lebih kebal agar data Final pasti terbaca
+        const safeStatus = (item.status_data || 'Final').trim();
+        const isFinal = safeStatus.toLowerCase() === 'final';
+        const badgeClass = isFinal ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300';
         
         // RENDER PREVIEW FOTO (Thumbnail)
         let photosHtml = '';
@@ -712,14 +713,18 @@
           <div>
             <div class="flex justify-between items-start mb-2">
               <h3 class="font-bold line-clamp-1">${item.nama_badan_usaha || 'Tanpa Nama'}</h3>
-              <span class="text-xs px-2 py-0.5 rounded-full border font-semibold ${badgeClass}">${item.status_data}</span>
+              <span class="text-xs px-2 py-0.5 rounded-full border font-semibold ${badgeClass}">${safeStatus}</span>
             </div>
             <p class="text-xs text-slate-500 mb-1">PJ: ${item.nama_pj || '-'}</p>
           </div>
           ${photosHtml}
           ${isFinal 
             ? `<div class="mt-4 flex gap-2">
-                 <button type="button" onclick="viewDetail('${item.id}')" class="w-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-300 dark:hover:bg-slate-700 transition">Lihat Detail (Terkunci)</button>
+                 <!-- PERBAIKAN: Tombol khusus untuk melihat data Final -->
+                 <button type="button" onclick="viewDetail('${item.id}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2.5 rounded-xl transition shadow-md flex justify-center items-center gap-2">
+                   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                   Lihat Data Final
+                 </button>
                </div>` 
             : `<div class="mt-4 flex gap-2">
                  <button type="button" onclick="loadToForm('${item.id}')" class="flex-1 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-sm font-bold py-2 rounded-lg transition border border-blue-200 dark:border-blue-800">Edit</button>
@@ -821,10 +826,12 @@
        const data = allDataCache.find(item => item.id === id);
        if (!data) return;
 
-       const isDraft = data.status_data === 'Draft';
+       // PERBAIKAN: Penyesuaian kebal huruf agar status terbaca dengan benar
+       const safeStatus = (data.status_data || 'Final').trim();
+       const isFinal = safeStatus.toLowerCase() === 'final';
        const badge = document.getElementById('detStatusBadge');
-       badge.className = `text-xs font-bold px-3 py-1 rounded-full mt-1 inline-block ${isDraft ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'}`;
-       badge.innerText = data.status_data;
+       badge.className = `text-xs font-bold px-3 py-1 rounded-full mt-1 inline-block ${isFinal ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300'}`;
+       badge.innerText = safeStatus;
 
        document.getElementById('detNama').innerText = data.nama_badan_usaha || '-';
        document.getElementById('detPJ').innerText = data.nama_pj || '-';
