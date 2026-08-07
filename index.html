@@ -257,7 +257,7 @@
                 <input type="tel" name="no_wa" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
               </div>
               <div>
-                <label class="block font-semibold text-sm mb-2">Tahun Berapa Beroperasi <span class="text-red-500">*</span></label>
+                <label class="block font-semibold text-sm mb-2">Tahun Mulai Usaha <span class="text-red-500">*</span></label>
                 <input type="number" name="tahun_beroperasi" min="1900" max="2026" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
               </div>
               
@@ -312,13 +312,13 @@
               </div>
 
               <div>
-                <label class="block font-semibold text-sm mb-2">Apa Terlibat KMP ? <span class="text-red-500">*</span></label>
+                <label class="block font-semibold text-sm mb-2">Apa Terlibat Koperasi Merah Putih ? <span class="text-red-500">*</span></label>
                 <select name="terlibat_kmp" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
                   <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
                 </select>
               </div>
               <div>
-                <label class="block font-semibold text-sm mb-2">Apa Terlibat MBG ? <span class="text-red-500">*</span></label>
+                <label class="block font-semibold text-sm mb-2">Apa Terlibat Makan Bergizi Gratis ? <span class="text-red-500">*</span></label>
                 <select name="terlibat_mbg" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
                   <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
                 </select>
@@ -328,7 +328,7 @@
 
           <!-- BAGIAN 2: PENGELUARAN -->
           <section class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">2. Rincian Pengeluaran 2025</h2>
+            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">2. Rincian Pengeluaran selama 2025</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div><label class="block text-sm font-semibold mb-2">Gaji / Upah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_gaji" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
               <div><label class="block text-sm font-semibold mb-2">Biaya Produksi <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_produksi" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
@@ -339,7 +339,7 @@
 
           <!-- BAGIAN 3 & 4: PENDAPATAN & ASET -->
           <section class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">3 & 4. Pendapatan & Aset 2025</h2>
+            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">3 & 4. Pendapatan & Aset selama 2025</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div><label class="block text-sm font-semibold mb-2">Pendapatan Barang & Jasa <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_barang_jasa" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
               <div><label class="block text-sm font-semibold mb-2">Pendapatan Lainnya <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_lainnya" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
@@ -415,24 +415,19 @@
             </div>
           </section>
 
+          <!-- TOMBOL AKSI (DI BAWAH FORM KESELURUHAN) -->
+          <div class="flex flex-col sm:flex-row gap-4 mt-8 mb-4">
+            <button type="button" id="btnSaveServerDraft" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 rounded-xl shadow-md transition duration-200 text-sm tracking-wide">
+              Simpan Draft
+            </button>
+            <button type="button" id="btnSubmitFinal" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-md transition duration-200 text-sm tracking-wide">
+              Kirim Data Final
+            </button>
+          </div>
+
       </form>
     </div>
   </main>
-
-  <!-- APP FOOTER (FLEX-NONE, ALWAYS BOTTOM) -->
-  <footer id="appFooter" class="flex-none bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 z-[90] shadow-[0_-5px_15px_-3px_rgba(0,0,0,0.1)] transition-colors duration-300 hidden">
-    <div class="w-full max-w-4xl mx-auto flex flex-col sm:flex-row gap-3">
-      <button type="button" id="btnSaveServerDraft" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center shadow-sm text-sm tracking-wide">
-        Simpan Draft
-      </button>
-      <button type="button" id="btnResetForm" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center shadow-sm text-sm">
-        Form Baru
-      </button>
-      <button type="button" id="btnSubmitFinal" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center shadow-sm text-sm tracking-wide">
-        Kirim Data Final
-      </button>
-    </div>
-  </footer>
 
   <script>
     // MASUKKAN URL APLIKASI WEB GOOGLE APPS SCRIPT ANDA DI SINI
@@ -453,7 +448,6 @@
        loginOverlay.classList.add('hidden');
        mainApp.classList.remove('hidden');
        document.getElementById('appHeader').classList.remove('hidden');
-       document.getElementById('appFooter').classList.remove('hidden');
        currentSheetName = localStorage.getItem('petugas_sheet');
        document.getElementById('labelPetugas').innerText = localStorage.getItem('petugas_user');
     }
@@ -489,7 +483,6 @@
             loginOverlay.classList.add('hidden');
             mainApp.classList.remove('hidden');
             document.getElementById('appHeader').classList.remove('hidden');
-            document.getElementById('appFooter').classList.remove('hidden');
           }, 300);
         } else {
           err.innerText = res.message;
@@ -795,7 +788,7 @@
           if(result.status === 'success') {
              showToast('Draft berhasil dihapus!', 'success');
              if(document.getElementById('sensusId').value === id) {
-                 document.getElementById('btnResetForm').click();
+                 resetFormFields();
              }
              loadHistory(); 
           } else {
@@ -920,7 +913,7 @@
        document.getElementById('detailOverlay').classList.remove('hidden');
     }
 
-    document.getElementById('btnResetForm').addEventListener('click', () => {
+    function resetFormFields() {
       form.reset();
       document.getElementById('sensusId').value = '';
       document.getElementById('activeDraftNotice').classList.add('hidden');
@@ -928,10 +921,9 @@
       stagedFilesArray = []; renderStagedFiles();
       document.getElementById('punyaNib').dispatchEvent(new Event('change'));
       document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
-      showToast('Formulir dibersihkan.', 'success');
       // Scroll form ke paling atas
       document.getElementById('mainApp').scrollTo({ top: 0, behavior: 'smooth' });
-    });
+    }
 
     function validateFormCustom() {
         const elements = form.elements;
@@ -1011,7 +1003,7 @@
         if (result.status === 'success') {
           showToast(result.message, 'success');
           if(statusType === 'Final') {
-             document.getElementById('btnResetForm').click();
+             resetFormFields();
           } else {
              document.getElementById('sensusId').value = result.id;
              stagedFilesArray = []; renderStagedFiles(); 
