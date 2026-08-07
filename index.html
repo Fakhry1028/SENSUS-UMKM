@@ -40,7 +40,7 @@
     
     section {
         padding: 1.5rem !important;
-        margin-bottom: 2rem !important;
+        margin-bottom: 1.5rem !important;
         border-radius: 1rem !important;
     }
     @media (min-width: 768px) {
@@ -48,7 +48,7 @@
     }
   </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans min-h-screen relative transition-colors duration-300">
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans h-[100dvh] flex flex-col overflow-hidden transition-colors duration-300">
 
   <!-- OVERLAY LOGIN (Persisten) -->
   <div id="loginOverlay" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center transition-opacity duration-300">
@@ -90,9 +90,9 @@
 
   <!-- MODAL DETAIL DATA (READ-ONLY) -->
   <div id="detailOverlay" class="fixed inset-0 bg-slate-900/90 z-[300] hidden flex items-center justify-center p-4 transition-opacity duration-300">
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-slate-200 dark:border-slate-700">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90dvh] flex flex-col border border-slate-200 dark:border-slate-700">
       <!-- Header -->
-      <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 rounded-t-2xl">
+      <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 rounded-t-2xl flex-none">
         <div>
           <h3 class="text-xl font-bold text-slate-800 dark:text-white">Detail Data Sensus</h3>
           <p id="detStatusBadge" class="text-xs font-bold px-2 py-1 rounded-full mt-1 inline-block"></p>
@@ -101,7 +101,7 @@
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
-      <!-- Body -->
+      <!-- Body (Scrollable) -->
       <div class="p-5 overflow-y-auto space-y-6 flex-1 text-sm text-slate-700 dark:text-slate-300">
           <!-- Identitas Usaha -->
           <div>
@@ -166,13 +166,13 @@
 
   <!-- SIDEBAR RIWAYAT (Geser Kiri) -->
   <div id="sidebarHistory" class="fixed inset-y-0 left-0 w-full sm:w-[400px] bg-white dark:bg-slate-800 shadow-2xl z-[140] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-slate-200 dark:border-slate-700">
-    <div class="p-5 bg-slate-100 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+    <div class="flex-none p-5 bg-slate-100 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
       <h2 class="font-bold text-lg">Riwayat Data</h2>
       <button type="button" id="btnCloseSidebar" class="p-2 bg-slate-200 dark:bg-slate-600 rounded-full hover:bg-slate-300 dark:hover:bg-slate-500 transition">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
       </button>
     </div>
-    <div class="p-4 border-b border-slate-200 dark:border-slate-700">
+    <div class="flex-none p-4 border-b border-slate-200 dark:border-slate-700">
       <input type="text" id="inputSearch" placeholder="Cari Nama Usaha..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
     </div>
     <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-800/80 relative">
@@ -183,19 +183,16 @@
       <div id="historyEmpty" class="text-center text-slate-500 text-sm hidden mt-10">Belum ada riwayat.</div>
       <div id="historyList" class="flex flex-col gap-3 hidden"></div>
     </div>
-    <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+    <div class="flex-none p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
         <button type="button" id="btnLogout" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition flex justify-center items-center gap-2 shadow-sm">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> Keluar (Logout)
-      <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-          <button type="button" id="btnLogout" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition flex justify-center items-center gap-2 shadow-sm">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> Keluar (Logout)
-          </button>
-      </div>
+        </button>
+    </div>
   </div>
 
-  <!-- APP HEADER (FIXED TOP) -->
-  <header id="appHeader" class="fixed top-0 left-0 right-0 bg-blue-700 dark:bg-slate-800 text-white z-[90] shadow-md transition-colors duration-300 hidden">
-    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+  <!-- APP HEADER (FLEX-NONE, ALWAYS TOP) -->
+  <header id="appHeader" class="flex-none bg-blue-700 dark:bg-slate-800 text-white z-[90] shadow-md transition-colors duration-300 hidden">
+    <div class="w-full max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
       <div class="flex items-center gap-3">
         <button type="button" id="btnOpenSidebar" class="p-2 bg-blue-600 dark:bg-slate-700 rounded-lg hover:bg-blue-500 dark:hover:bg-slate-600 transition shadow-sm">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -215,226 +212,216 @@
     </div>
   </header>
 
-  <!-- KONTEN UTAMA APLIKASI -->
-  <div class="max-w-4xl mx-auto pt-24 pb-32 px-4 hidden" id="mainApp">
+  <!-- KONTEN UTAMA APLIKASI (FLEX-1, MENGISI SISA RUANG & SCROLL DI SINI) -->
+  <main id="mainApp" class="flex-1 overflow-y-auto w-full relative hidden scroll-smooth bg-slate-100 dark:bg-slate-900">
     
-    <!-- Toast Notification (Popup Peringatan) -->
-    <div id="toastNotification" class="fixed top-24 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl text-white font-bold transition-all duration-300 opacity-0 pointer-events-none z-[400] flex items-center gap-2">
+    <!-- Toast Notification (Diposisikan absolute/fixed terhadap layar) -->
+    <div id="toastNotification" class="fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl text-white font-bold transition-all duration-300 opacity-0 pointer-events-none z-[400] flex items-center gap-2">
       <span id="toastIcon"></span>
       <span id="toastMessage">Pesan</span>
     </div>
 
-    <!-- Form Utama: onsubmit dicegah agar validasi custom bisa jalan tanpa reload -->
-    <form id="sensusForm" onsubmit="event.preventDefault();" class="space-y-6 md:space-y-8">
-      <input type="hidden" name="id" id="sensusId" value="">
-      <input type="hidden" name="status_data" id="statusData" value="Final">
+    <!-- WADAH FORM -->
+    <div class="max-w-4xl mx-auto p-4 pb-8 md:p-6 md:pb-12 w-full">
+      <form id="sensusForm" onsubmit="event.preventDefault();" class="space-y-6 md:space-y-8">
+        <input type="hidden" name="id" id="sensusId" value="">
+        <input type="hidden" name="status_data" id="statusData" value="Final">
 
-      <!-- BAGIAN 1: IDENTITAS BADAN USAHA -->
-        <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">1. Identitas Badan Usaha</h2>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="md:col-span-2">
-              <label class="block font-semibold text-sm mb-2">Nama Badan Usaha <span class="text-red-500">*</span></label>
-              <input type="text" name="nama_badan_usaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
-            </div>
-            <div class="md:col-span-2">
-              <label class="block font-semibold text-sm mb-2">Alamat Lengkap <span class="text-red-500">*</span></label>
-              <textarea name="alamat_lengkap" rows="2" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
-            </div>
-            <div>
-              <label class="block font-semibold text-sm mb-2">Nama Penanggung Jawab <span class="text-red-500">*</span></label>
-              <input type="text" name="nama_pj" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
-            </div>
-            <div>
-              <label class="block font-semibold text-sm mb-2">NIK Penanggung Jawab <span class="text-red-500">*</span></label>
-              <input type="number" name="nik_pj" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
-            </div>
-            <div>
-              <label class="block font-semibold text-sm mb-2">Email <span class="text-red-500">*</span></label>
-              <input type="email" name="email" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
-            </div>
-            <div>
-              <label class="block font-semibold text-sm mb-2">No. WhatsApp <span class="text-red-500">*</span></label>
-              <input type="tel" name="no_wa" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
-            </div>
-            <div>
-              <label class="block font-semibold text-sm mb-2">Tahun Berapa Beroperasi <span class="text-red-500">*</span></label>
-              <input type="number" name="tahun_beroperasi" min="1900" max="2026" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
-            </div>
+        <!-- BAGIAN 1: IDENTITAS BADAN USAHA -->
+          <section class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">1. Identitas Badan Usaha</h2>
             
-            <div class="md:col-span-2 border-t border-slate-200 dark:border-slate-700 pt-4 mt-2">
-              <label class="block font-semibold text-sm mb-2">Status Badan Usaha <span class="text-red-500">*</span></label>
-              <select name="status_badan_usaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
-                <option value="">-- Pilih --</option>
-                <option value="PT">PT</option><option value="PP">PP</option><option value="CV">CV</option>
-                <option value="Yayasan">Yayasan</option><option value="Koperasi">Koperasi</option>
-                <option value="Dana Pensiun">Dana Pensiun</option><option value="Perum / Perumda">Perum / Perumda</option>
-                <option value="BUMDes">BUMDes</option><option value="Firma">Firma</option>
-                <option value="Persekutuan Perdata">Persekutuan Perdata</option><option value="Badan Usaha Lainnya">Badan Usaha Lainnya</option>
-                <option value="Bukan BU">Bukan BU</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-semibold text-sm mb-2">Apa punya Laporan Keuangan? <span class="text-red-500">*</span></label>
-              <select name="laporan_keuangan" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
-                <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-semibold text-sm mb-2">Produk Utama yang Dihasilkan <span class="text-red-500">*</span></label>
-              <input type="text" name="produk_utama" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
-            </div>
-            <div class="md:col-span-2">
-              <label class="block font-semibold text-sm mb-2">Jaringan Usaha <span class="text-red-500">*</span></label>
-              <select name="jaringan_usaha" id="jaringanUsaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
-                <option value="">-- Pilih --</option>
-                <option value="Tunggal">Tunggal</option><option value="Kantor Pusat">Kantor Pusat</option>
-                <option value="Cabang">Cabang</option><option value="Perwakilan">Perwakilan</option>
-                <option value="Pabrik">Pabrik</option><option value="Unit Penunjang">Unit Penunjang</option>
-              </select>
-            </div>
-            
-            <div id="fieldKantorPusat" class="hidden md:col-span-2 bg-indigo-50 dark:bg-indigo-900/20 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800 space-y-4 shadow-inner">
-              <p class="font-bold text-indigo-900 dark:text-indigo-300 text-sm">Informasi Kantor Pusat</p>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="md:col-span-2">
-                  <label class="block font-medium text-xs mb-1">Nama Kantor Pusat <span class="text-red-500">*</span></label>
-                  <input type="text" name="nama_kantor_pusat" id="inputKP_nama" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
-                </div>
-                <div>
-                  <label class="block font-medium text-xs mb-1">Alamat Kantor Pusat <span class="text-red-500">*</span></label>
-                  <input type="text" name="alamat_kantor_pusat" id="inputKP_alamat" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
-                </div>
-                <div>
-                  <label class="block font-medium text-xs mb-1">Email Kantor Pusat <span class="text-red-500">*</span></label>
-                  <input type="email" name="email_kantor_pusat" id="inputKP_email" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="md:col-span-2">
+                <label class="block font-semibold text-sm mb-2">Nama Badan Usaha <span class="text-red-500">*</span></label>
+                <input type="text" name="nama_badan_usaha" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+              </div>
+              <div class="md:col-span-2">
+                <label class="block font-semibold text-sm mb-2">Alamat Lengkap <span class="text-red-500">*</span></label>
+                <textarea name="alamat_lengkap" rows="2" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+              </div>
+              <div>
+                <label class="block font-semibold text-sm mb-2">Nama Penanggung Jawab <span class="text-red-500">*</span></label>
+                <input type="text" name="nama_pj" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+              </div>
+              <div>
+                <label class="block font-semibold text-sm mb-2">NIK Penanggung Jawab <span class="text-red-500">*</span></label>
+                <input type="number" name="nik_pj" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+              </div>
+              <div>
+                <label class="block font-semibold text-sm mb-2">Email <span class="text-red-500">*</span></label>
+                <input type="email" name="email" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+              </div>
+              <div>
+                <label class="block font-semibold text-sm mb-2">No. WhatsApp <span class="text-red-500">*</span></label>
+                <input type="tel" name="no_wa" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+              </div>
+              <div>
+                <label class="block font-semibold text-sm mb-2">Tahun Berapa Beroperasi <span class="text-red-500">*</span></label>
+                <input type="number" name="tahun_beroperasi" min="1900" max="2026" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+              </div>
+              
+              <div class="md:col-span-2 border-t border-slate-100 dark:border-slate-700 pt-4 mt-2">
+                <label class="block font-semibold text-sm mb-2">Status Badan Usaha <span class="text-red-500">*</span></label>
+                <select name="status_badan_usaha" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                  <option value="">-- Pilih --</option>
+                  <option value="PT">PT</option><option value="PP">PP</option><option value="CV">CV</option>
+                  <option value="Yayasan">Yayasan</option><option value="Koperasi">Koperasi</option>
+                  <option value="Dana Pensiun">Dana Pensiun</option><option value="Perum / Perumda">Perum / Perumda</option>
+                  <option value="BUMDes">BUMDes</option><option value="Firma">Firma</option>
+                  <option value="Persekutuan Perdata">Persekutuan Perdata</option><option value="Badan Usaha Lainnya">Badan Usaha Lainnya</option>
+                  <option value="Bukan BU">Bukan BU</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold text-sm mb-2">Apa punya Laporan Keuangan? <span class="text-red-500">*</span></label>
+                <select name="laporan_keuangan" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                  <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold text-sm mb-2">Produk Utama yang Dihasilkan <span class="text-red-500">*</span></label>
+                <input type="text" name="produk_utama" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+              </div>
+              <div class="md:col-span-2">
+                <label class="block font-semibold text-sm mb-2">Jaringan Usaha <span class="text-red-500">*</span></label>
+                <select name="jaringan_usaha" id="jaringanUsaha" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                  <option value="">-- Pilih --</option>
+                  <option value="Tunggal">Tunggal</option><option value="Kantor Pusat">Kantor Pusat</option>
+                  <option value="Cabang">Cabang</option><option value="Perwakilan">Perwakilan</option>
+                  <option value="Pabrik">Pabrik</option><option value="Unit Penunjang">Unit Penunjang</option>
+                </select>
+              </div>
+              
+              <div id="fieldKantorPusat" class="hidden md:col-span-2 bg-indigo-50 dark:bg-indigo-900/20 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800 space-y-4 shadow-inner">
+                <p class="font-bold text-indigo-900 dark:text-indigo-300 text-sm">Informasi Kantor Pusat</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div class="md:col-span-2">
+                    <label class="block font-medium text-xs mb-1">Nama Kantor Pusat <span class="text-red-500">*</span></label>
+                    <input type="text" name="nama_kantor_pusat" id="inputKP_nama" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                  </div>
+                  <div>
+                    <label class="block font-medium text-xs mb-1">Alamat Kantor Pusat <span class="text-red-500">*</span></label>
+                    <input type="text" name="alamat_kantor_pusat" id="inputKP_alamat" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                  </div>
+                  <div>
+                    <label class="block font-medium text-xs mb-1">Email Kantor Pusat <span class="text-red-500">*</span></label>
+                    <input type="email" name="email_kantor_pusat" id="inputKP_email" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div>
-              <label class="block font-semibold text-sm mb-2">Apa Terlibat KMP ? <span class="text-red-500">*</span></label>
-              <select name="terlibat_kmp" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
-                <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
-              </select>
-            </div>
-            <div>
-              <label class="block font-semibold text-sm mb-2">Apa Terlibat MBG ? <span class="text-red-500">*</span></label>
-              <select name="terlibat_mbg" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
-                <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
-              </select>
-            </div>
-          </div>
-        </section>
-
-        <!-- BAGIAN 2: PENGELUARAN -->
-        <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">2. Rincian Pengeluaran 2025</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div><label class="block text-sm font-semibold mb-2">Gaji / Upah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_gaji" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
-            <div><label class="block text-sm font-semibold mb-2">Biaya Produksi <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_produksi" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
-            <div><label class="block text-sm font-semibold mb-2">Operasional <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_operasional" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
-            <div><label class="block text-sm font-semibold mb-2">Non Operasional <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_non_operasional" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
-          </div>
-        </section>
-
-        <!-- BAGIAN 3 & 4: PENDAPATAN & ASET -->
-        <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">3 & 4. Pendapatan & Aset 2025</h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div><label class="block text-sm font-semibold mb-2">Pendapatan Barang & Jasa <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_barang_jasa" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
-            <div><label class="block text-sm font-semibold mb-2">Pendapatan Lainnya <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_lainnya" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
-            <div><label class="block text-sm font-semibold mb-2">Aset Tanah & Bangunan <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="aset_tanah_bangunan" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
-            <div><label class="block text-sm font-semibold mb-2">Aset Non-Tanah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="aset_non_tanah" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
-            
-            <div class="md:col-span-2">
-              <label class="block text-sm font-semibold mb-2">Luas Tempat Usaha <span class="text-red-500">*</span></label>
-              <div class="flex">
-                <input type="number" required name="luas_tempat_usaha" placeholder="Angka luas..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-l-lg p-3 outline-none border-r-0 focus:ring-2 focus:ring-blue-500 transition">
-                <select name="satuan_luas" required class="bg-gray-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-r-lg p-3 outline-none font-bold cursor-pointer w-24">
-                  <option value="m²">m²</option>
-                  <option value="ubin">ubin</option>
+              <div>
+                <label class="block font-semibold text-sm mb-2">Apa Terlibat KMP ? <span class="text-red-500">*</span></label>
+                <select name="terlibat_kmp" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                  <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
+                </select>
+              </div>
+              <div>
+                <label class="block font-semibold text-sm mb-2">Apa Terlibat MBG ? <span class="text-red-500">*</span></label>
+                <select name="terlibat_mbg" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                  <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
                 </select>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <!-- BAGIAN 5: NOMOR NIB & FOTO (DIPINDAH KE BAWAH) -->
-        <section class="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-xl border border-blue-200 dark:border-blue-800 shadow-sm">
-          <h2 class="text-xl font-bold text-blue-900 dark:text-blue-300 border-b-2 border-blue-200 dark:border-blue-700 pb-3 mb-4">5. Perizinan & Dokumentasi NIB</h2>
-          
-          <div class="mb-5">
-            <label class="block font-semibold text-sm mb-2">Punya No. NIB? <span class="text-red-500">*</span></label>
-            <select name="punya_nib" id="punyaNib" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
-              <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
-            </select>
-          </div>
-
-          <!-- KOLOM MUNCUL JIKA PUNYA NIB -->
-          <div id="fieldNoNib" class="hidden space-y-5">
-            <div>
-              <label class="block font-semibold text-sm mb-2 text-blue-800 dark:text-blue-400">Nomor NIB <span class="text-red-500">*</span></label>
-              <input type="text" name="no_nib" id="inputNoNib" placeholder="Masukkan angka NIB..." class="w-full bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+          <!-- BAGIAN 2: PENGELUARAN -->
+          <section class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">2. Rincian Pengeluaran 2025</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div><label class="block text-sm font-semibold mb-2">Gaji / Upah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_gaji" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+              <div><label class="block text-sm font-semibold mb-2">Biaya Produksi <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_produksi" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+              <div><label class="block text-sm font-semibold mb-2">Operasional <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_operasional" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+              <div><label class="block text-sm font-semibold mb-2">Non Operasional <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_non_operasional" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
             </div>
+          </section>
 
-            <div id="sectionUploadNIB" class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
-              <label class="block font-semibold text-blue-900 dark:text-blue-300 text-sm mb-3">Upload Foto NIB (Wajib) <span class="text-red-500">*</span></label>
+          <!-- BAGIAN 3 & 4: PENDAPATAN & ASET -->
+          <section class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">3 & 4. Pendapatan & Aset 2025</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div><label class="block text-sm font-semibold mb-2">Pendapatan Barang & Jasa <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_barang_jasa" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+              <div><label class="block text-sm font-semibold mb-2">Pendapatan Lainnya <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_lainnya" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+              <div><label class="block text-sm font-semibold mb-2">Aset Tanah & Bangunan <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="aset_tanah_bangunan" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+              <div><label class="block text-sm font-semibold mb-2">Aset Non-Tanah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="aset_non_tanah" placeholder="Rp 0" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
               
-              <!-- Container Foto Lama (Muncul jika edit draft) -->
-              <div id="existingPhotosContainer" class="hidden mb-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
-              <p class="text-xs font-bold text-slate-500 mb-2">Foto Tersimpan (Dari Draft Sebelumnya):</p>
-              <div id="existingPhotosList" class="flex gap-2 overflow-x-auto pb-2"></div>
-            </div>
-
-            <!-- Tombol Pilih Foto -->
-            <div class="flex flex-col sm:flex-row gap-3 mb-2">
-              <label class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-4 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
-                Buka Kamera
-                <input type="file" id="inputFotoCamera" accept="image/*" capture="environment" class="hidden">
-              </label>
-              <label class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-4 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
-                Pilih dari Galeri
-                <input type="file" id="inputFotoGallery" accept="image/*" multiple class="hidden">
-              </label>
-            </div>
-
-              <!-- Tombol Pilih Foto -->
-              <div class="flex flex-col sm:flex-row gap-3 mb-2">
-                <label class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-3.5 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
-                  📸 Buka Kamera
-                  <input type="file" id="inputFotoCamera" accept="image/*" capture="environment" class="hidden">
-                </label>
-                <label class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-3.5 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
-                  📁 Pilih dari Galeri
-                  <input type="file" id="inputFotoGallery" accept="image/*" multiple class="hidden">
-                </label>
+              <div class="md:col-span-2">
+                <label class="block text-sm font-semibold mb-2">Luas Tempat Usaha <span class="text-red-500">*</span></label>
+                <div class="flex">
+                  <input type="number" required name="luas_tempat_usaha" placeholder="Angka luas..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-l-lg p-3 outline-none border-r-0 focus:ring-2 focus:ring-blue-500 transition">
+                  <select name="satuan_luas" required class="bg-slate-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-r-lg p-3 outline-none font-bold cursor-pointer w-24">
+                    <option value="m²">m²</option>
+                    <option value="ubin">ubin</option>
+                  </select>
+                </div>
               </div>
-              
-              <!-- Tempat Preview Gambar Baru -->
-              <div id="stagedFilesList" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
-              
-              <p class="text-xs text-blue-800 dark:text-blue-400 mt-3 font-medium">Bisa melampirkan lebih dari satu foto. Pastikan jelas terbaca.</p>
             </div>
-          </div>
-        </section>
+          </section>
 
-        <!-- BAGIAN 6: CATATAN (PALING AKHIR) -->
-        <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
-          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">6. Catatan Tambahan</h2>
-          <div>
-            <label class="block text-sm font-semibold mb-2">Catatan / Keterangan (Opsional)</label>
-            <textarea name="catatan" rows="3" placeholder="Tuliskan catatan khusus di sini jika ada..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
-          </div>
-        </section>
+          <!-- BAGIAN 5: NOMOR NIB & FOTO (DIPINDAH KE BAWAH) -->
+          <section class="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-xl border border-blue-200 dark:border-blue-800 shadow-sm">
+            <h2 class="text-xl font-bold text-blue-900 dark:text-blue-300 border-b-2 border-blue-200 dark:border-blue-700 pb-3 mb-4">5. Perizinan & Dokumentasi NIB</h2>
+            
+            <div class="mb-5">
+              <label class="block font-semibold text-sm mb-2">Punya No. NIB? <span class="text-red-500">*</span></label>
+              <select name="punya_nib" id="punyaNib" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
+              </select>
+            </div>
+
+            <!-- KOLOM MUNCUL JIKA PUNYA NIB -->
+            <div id="fieldNoNib" class="hidden space-y-5">
+              <div>
+                <label class="block font-semibold text-sm mb-2 text-blue-800 dark:text-blue-400">Nomor NIB <span class="text-red-500">*</span></label>
+                <input type="text" name="no_nib" id="inputNoNib" placeholder="Masukkan angka NIB..." class="w-full bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+              </div>
+
+              <div id="sectionUploadNIB" class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                <label class="block font-semibold text-blue-900 dark:text-blue-300 text-sm mb-3">Upload Foto NIB (Wajib) <span class="text-red-500">*</span></label>
+                
+                <!-- Container Foto Lama (Muncul jika edit draft) -->
+                <div id="existingPhotosContainer" class="hidden mb-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                <p class="text-xs font-bold text-slate-500 mb-2">Foto Tersimpan (Dari Draft Sebelumnya):</p>
+                <div id="existingPhotosList" class="flex gap-2 overflow-x-auto pb-2"></div>
+              </div>
+
+                <!-- Tombol Pilih Foto -->
+                <div class="flex flex-col sm:flex-row gap-3 mb-2">
+                  <label class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-3.5 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
+                    Buka Kamera
+                    <input type="file" id="inputFotoCamera" accept="image/*" capture="environment" class="hidden">
+                  </label>
+                  <label class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-3.5 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
+                    Pilih dari Galeri
+                    <input type="file" id="inputFotoGallery" accept="image/*" multiple class="hidden">
+                  </label>
+                </div>
+                
+                <!-- Tempat Preview Gambar Baru -->
+                <div id="stagedFilesList" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+                
+                <p class="text-xs text-blue-800 dark:text-blue-400 mt-3 font-medium">Bisa melampirkan lebih dari satu foto. Pastikan jelas terbaca.</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- BAGIAN 6: CATATAN (PALING AKHIR) -->
+          <section class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm mb-2">
+            <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">6. Catatan Tambahan</h2>
+            <div>
+              <label class="block text-sm font-semibold mb-2">Catatan / Keterangan (Opsional)</label>
+              <textarea name="catatan" rows="3" placeholder="Tuliskan catatan khusus di sini jika ada..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+            </div>
+          </section>
 
       </form>
-  </div>
+    </div>
+  </main>
 
-  <!-- APP FOOTER (FIXED BOTTOM) -->
-  <div id="appFooter" class="fixed bottom-0 left-0 right-0 bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 z-[90] shadow-[0_-5px_15px_-3px_rgba(0,0,0,0.1)] transition-colors duration-300 hidden">
-    <div class="max-w-4xl mx-auto flex flex-col sm:flex-row gap-3">
+  <!-- APP FOOTER (FLEX-NONE, ALWAYS BOTTOM) -->
+  <footer id="appFooter" class="flex-none bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 p-4 z-[90] shadow-[0_-5px_15px_-3px_rgba(0,0,0,0.1)] transition-colors duration-300 hidden">
+    <div class="w-full max-w-4xl mx-auto flex flex-col sm:flex-row gap-3">
       <button type="button" id="btnSaveServerDraft" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 px-4 rounded-xl transition flex items-center justify-center shadow-sm text-sm tracking-wide">
         Simpan Draft
       </button>
@@ -445,7 +432,7 @@
         Kirim Data Final
       </button>
     </div>
-  </div>
+  </footer>
 
   <script>
     // MASUKKAN URL APLIKASI WEB GOOGLE APPS SCRIPT ANDA DI SINI
@@ -522,18 +509,20 @@
       window.location.reload();
     });
 
-    // SIDEBAR & PASSWORD LOGIC
+    // SIDEBAR & PASSWORD LOGIC DENGAN MEMORI "HISTORY STATE"
     document.getElementById('btnOpenSidebar').addEventListener('click', () => {
-      history.pushState({ modal: 'pass' }, "");
+      history.pushState({ id: 'sidebar' }, ""); // Menyimpan jejak bahwa kita masuk ke area Sidebar
       passwordOverlay.classList.remove('hidden');
       document.getElementById('historyPassword').value = '';
       document.getElementById('historyError').classList.add('hidden');
     });
+
     document.getElementById('btnCancelHistory').addEventListener('click', () => {
-      history.back();
+      history.back(); // Jika batal password, kembali ke awal
     });
+
     document.getElementById('btnCloseSidebar').addEventListener('click', () => {
-      history.back();
+      history.back(); // Jika tutup sidebar, kembali ke awal
     });
 
     document.getElementById('btnVerifyHistory').addEventListener('click', () => {
@@ -549,11 +538,19 @@
       }
     });
 
-    // GLOBAL LISTENER UNTUK TOMBOL BACK DI HP
+    // KUNCI UTAMA: MEMBACA TOMBOL "BACK" FISIK DARI HP
     window.addEventListener('popstate', (e) => {
-      document.getElementById('passwordOverlay').classList.add('hidden');
-      document.getElementById('sidebarHistory').classList.add('-translate-x-full');
-      document.getElementById('detailOverlay').classList.add('hidden');
+      const state = e.state;
+      if (!state) {
+          // Posisi di Formulir Utama
+          document.getElementById('passwordOverlay').classList.add('hidden');
+          document.getElementById('sidebarHistory').classList.add('-translate-x-full');
+          document.getElementById('detailOverlay').classList.add('hidden');
+      } else if (state.id === 'sidebar') {
+          // Posisi di Sidebar, pastikan Halaman Detail ditutup tapi Sidebar tetap terbuka
+          document.getElementById('detailOverlay').classList.add('hidden');
+          document.getElementById('sidebarHistory').classList.remove('-translate-x-full');
+      }
     });
 
     // DARK MODE GABUNGAN
@@ -685,7 +682,7 @@
          ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>'
          : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
       
-      toast.className = `fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl text-white font-bold transition-all duration-300 z-[400] flex items-center gap-2 ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`;
+      toast.className = `fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl text-white font-bold transition-all duration-300 z-[400] flex items-center gap-2 ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`;
       
       setTimeout(() => { toast.classList.add('opacity-0', '-translate-y-5', 'pointer-events-none'); }, 4000);
     }
@@ -734,12 +731,10 @@
 
       const displayData = [...dataArray].reverse();
       displayData.forEach(item => {
-        // PERBAIKAN: Deteksi status lebih kebal agar data Final pasti terbaca
         const safeStatus = (item.status_data || 'Final').trim();
         const isFinal = safeStatus.toLowerCase() === 'final';
         const badgeClass = isFinal ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300' : 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300';
         
-        // RENDER PREVIEW FOTO (Thumbnail)
         let photosHtml = '';
         if (item.foto_nib && item.foto_nib !== '-') {
             const urls = item.foto_nib.split(' , \n');
@@ -764,7 +759,6 @@
           ${photosHtml}
           ${isFinal 
             ? `<div class="mt-4 flex gap-2">
-                 <!-- PERBAIKAN: Tombol khusus untuk melihat data Final -->
                  <button type="button" onclick="viewDetail('${item.id}')" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold py-2.5 rounded-xl transition shadow-md flex justify-center items-center gap-2">
                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                    Lihat Data Final
@@ -787,7 +781,6 @@
       renderHistory(filtered);
     });
 
-    // FUNGSI HAPUS DRAFT
     window.deleteDraft = async function(id) {
        if(!confirm('Apakah Anda yakin ingin menghapus draft ini secara PERMANEN dari Server?')) return;
        
@@ -801,11 +794,10 @@
           
           if(result.status === 'success') {
              showToast('Draft berhasil dihapus!', 'success');
-             // Jika form saat ini sedang membuka draft tersebut, reset formnya
              if(document.getElementById('sensusId').value === id) {
                  document.getElementById('btnResetForm').click();
              }
-             loadHistory(); // Refresh riwayat
+             loadHistory(); 
           } else {
              showToast(result.message, 'error');
           }
@@ -814,7 +806,6 @@
        }
     }
 
-    // FUNGSI LOAD DRAFT KE FORM
     window.loadToForm = function(id) {
       const data = allDataCache.find(item => item.id === id);
       if (!data) return;
@@ -828,11 +819,8 @@
       });
 
       document.getElementById('sensusId').value = data.id;
-      
-      // Kosongkan file upload baru
       stagedFilesArray = []; renderStagedFiles(); 
       
-      // Tampilkan foto tersimpan jika ada
       const existingContainer = document.getElementById('existingPhotosContainer');
       const existingList = document.getElementById('existingPhotosList');
       existingList.innerHTML = '';
@@ -853,24 +841,20 @@
           existingContainer.classList.add('hidden');
       }
 
-      // Pancing trigger untuk memunculkan kolom yang tersembunyi
       document.getElementById('punyaNib').dispatchEvent(new Event('change'));
       document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
 
       document.getElementById('activeDraftNotice').classList.remove('hidden');
       document.getElementById('activeDraftName').innerText = data.nama_badan_usaha;
       
-      sidebarHistory.classList.add('-translate-x-full'); // Tutup sidebar
+      history.back(); // Trigger popstate untuk tutup sidebar
       showToast('Draft siap dilanjutkan.', 'success');
-      form.scrollIntoView({ behavior: 'smooth' });
     };
 
-    // FUNGSI LIHAT DETAIL (READ-ONLY MODAL)
     window.viewDetail = function(id) {
        const data = allDataCache.find(item => item.id === id);
        if (!data) return;
 
-       // PERBAIKAN: Penyesuaian kebal huruf agar status terbaca dengan benar
        const safeStatus = (data.status_data || 'Final').trim();
        const isFinal = safeStatus.toLowerCase() === 'final';
        const badge = document.getElementById('detStatusBadge');
@@ -931,7 +915,8 @@
            photoContainer.innerHTML = '<span class="text-sm text-slate-500 italic">Tidak ada foto yang dilampirkan.</span>';
        }
 
-       history.pushState({ modal: 'detail' }, "");
+       // MEREKAM JEJAK DETAIL KE DALAM HISTORY BROWSER
+       history.pushState({ id: 'detail' }, "");
        document.getElementById('detailOverlay').classList.remove('hidden');
     }
 
@@ -944,14 +929,14 @@
       document.getElementById('punyaNib').dispatchEvent(new Event('change'));
       document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
       showToast('Formulir dibersihkan.', 'success');
+      // Scroll form ke paling atas
+      document.getElementById('mainApp').scrollTo({ top: 0, behavior: 'smooth' });
     });
 
-    // FUNGSI CUSTOM VALIDASI (Mencegah tombol mati / macet)
     function validateFormCustom() {
         const elements = form.elements;
         for (let i = 0; i < elements.length; i++) {
             const el = elements[i];
-            // Cek apakah wajib diisi dan SEDANG MUNCUL di layar (tidak hidden)
             if (el.hasAttribute('required') && el.offsetParent !== null) {
                 if (!el.value.trim()) {
                     el.focus();
@@ -964,30 +949,23 @@
                         labelName = el.closest('div').querySelector('label').innerText.replace('*', '').trim();
                     }
                     showToast(`Harap isi: ${labelName}`, 'error');
-                    return false; // Validasi Gagal, BERHENTI!
+                    return false; 
                 }
             }
         }
-        return true; // Validasi Sukses
+        return true;
     }
 
-    // POST DATA (DRAFT vs FINAL)
     async function postData(statusType, btnElement) {
-      
-      // JIKA FINAL, LAKUKAN VALIDASI KETAT.
       if (statusType === 'Final') {
-        
-        // 1. Validasi Custom (Scroll & Toast ke kolom kosong)
         if (!validateFormCustom()) return;
         
-        // 2. Validasi Ekstra untuk NIB & Foto
         if (document.getElementById('punyaNib').value === 'Ya') {
             const inputNoNib = document.getElementById('inputNoNib');
             if(!inputNoNib.value) {
                 inputNoNib.focus(); inputNoNib.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 showToast('Nomor NIB wajib diisi!', 'error'); return;
             }
-            // Cek apakah tidak ada file baru DAN tidak ada file lama (dari draft)
             const hasExistingPhotos = !document.getElementById('existingPhotosContainer').classList.contains('hidden');
             if(stagedFilesArray.length === 0 && !hasExistingPhotos) {
                 document.getElementById('sectionUploadNIB').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1003,13 +981,11 @@
       const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
 
-      // Bersihkan format Rp dari string sebelum masuk Google Sheet
       currencyInputs.forEach(input => {
         const name = input.name;
         if(data[name]) data[name] = data[name].replace(/[^0-9]/g, ''); 
       });
 
-      // Sisipkan URL foto lama jika sedang mengedit draft yang sebelumnya sudah di-upload fotonya
       const idSensus = document.getElementById('sensusId').value;
       if (idSensus) {
         const existingData = allDataCache.find(item => item.id === idSensus);
@@ -1037,14 +1013,10 @@
           if(statusType === 'Final') {
              document.getElementById('btnResetForm').click();
           } else {
-             // Jika simpan draft, perbarui ID di form biar klo disave lagi numpuk (edit), ga bikin baris baru
              document.getElementById('sensusId').value = result.id;
              stagedFilesArray = []; renderStagedFiles(); 
-             
-             // Karena fotonya sekarang sudah masuk DB (Tersimpan), kita panggil ulang dari riwayat
-             // Tapi lebih cepat jika pancing loadHistory untuk sync dengan server
           }
-          loadHistory(); // Refresh riwayat agar data terbaru muncul
+          loadHistory();
         } else { 
           showToast(result.message, 'error'); 
         }
@@ -1056,7 +1028,6 @@
       }
     }
 
-    // LISTENER TOMBOL MANUAL VALIDASI
     document.getElementById('btnSaveServerDraft').addEventListener('click', function() { postData('Draft', this); });
     document.getElementById('btnSubmitFinal').addEventListener('click', function() { postData('Final', this); });
 
