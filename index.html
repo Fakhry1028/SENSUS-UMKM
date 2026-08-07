@@ -6,12 +6,11 @@
   <title>Sensus UMKM 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: { extend: {} }
-    }
+    tailwind.config = { darkMode: 'class', theme: { extend: {} } }
   </script>
   <style>
+    /* MATIKAN SCROLL REFRESH DI HP */
+    html, body { overscroll-behavior-y: none; }
     ::-webkit-scrollbar { width: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -20,7 +19,31 @@
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans min-h-screen py-8 px-4 relative transition-colors duration-300">
 
-  <div class="max-w-4xl mx-auto space-y-6">
+  <!-- OVERLAY LOGIN (Menutupi seluruh layar sebelum login) -->
+  <div id="loginOverlay" class="fixed inset-0 bg-slate-900 z-[100] flex items-center justify-center transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-2xl max-w-sm w-full mx-4 border border-slate-200 dark:border-slate-700">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-400">SENSUS UMKM</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400">Silakan login sebagai Petugas</p>
+      </div>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold mb-1">Username</label>
+          <input type="text" id="loginUsername" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Password</label>
+          <input type="password" id="loginPassword" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <p id="loginError" class="text-red-500 text-sm hidden font-medium text-center"></p>
+        <button type="submit" id="btnLogin" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition flex justify-center items-center">
+          Masuk
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <div class="max-w-4xl mx-auto space-y-6 hidden" id="mainApp">
     
     <!-- Toast Notification -->
     <div id="toastNotification" class="fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 opacity-0 pointer-events-none z-50">
@@ -28,79 +51,82 @@
     </div>
 
     <!-- MODUL FORMULIR -->
-    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden transition-colors">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
       <div class="bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-900 dark:to-blue-800 text-white p-8 text-center relative">
-        <!-- Tombol Dark Mode -->
+        <button id="btnLogout" class="absolute top-4 left-4 p-2 text-sm font-medium rounded bg-white/20 hover:bg-white/30 transition">Keluar</button>
         <button id="btnDarkMode" class="absolute top-4 right-4 p-2 rounded-full bg-white/20 hover:bg-white/30 transition">
           <svg id="iconMoon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
           <svg id="iconSun" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
         </button>
-        <h1 class="text-3xl font-bold tracking-wide mb-2">FORMULIR SENSUS UMKM 2026</h1>
+        <h1 class="text-3xl font-bold tracking-wide mb-2 mt-4 md:mt-0">FORMULIR SENSUS UMKM 2026</h1>
         <p class="text-blue-100 dark:text-blue-200">Pendataan Badan Usaha, Keuangan, dan Aset Usaha</p>
+        <p class="mt-2 text-xs text-blue-200">Petugas: <span id="labelPetugas" class="font-bold"></span></p>
       </div>
 
-      <!-- Notice Status ID -->
       <div id="activeDraftNotice" class="hidden bg-emerald-50 dark:bg-emerald-900/30 border-b border-emerald-100 dark:border-emerald-800 p-4 text-emerald-800 dark:text-emerald-400 text-sm text-center">
-        <span class="font-bold flex items-center justify-center gap-2">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-          Mode Edit Aktif (Akan menimpa data server): <span id="activeDraftName" class="font-normal italic"></span>
-        </span>
+        <span class="font-bold">Mode Edit Draft : <span id="activeDraftName" class="font-normal italic"></span></span>
       </div>
 
       <form id="sensusForm" class="p-6 md:p-8 space-y-10">
-        <!-- HIDDEN FIELD UNTUK ID DAN STATUS -->
         <input type="hidden" name="id" id="sensusId" value="">
         <input type="hidden" name="status_data" id="statusData" value="Final">
 
         <!-- BAGIAN 1: IDENTITAS BADAN USAHA -->
         <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700">
-          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6 flex items-center gap-2">
-            <span class="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300 w-8 h-8 rounded-full flex items-center justify-center text-sm">1</span>
-            Identitas Badan Usaha
-          </h2>
+          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">1. Identitas Badan Usaha</h2>
           
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="md:col-span-2">
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Nama Badan Usaha <span class="text-red-500">*</span></label>
-              <input type="text" name="nama_badan_usaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Nama Badan Usaha <span class="text-red-500">*</span></label>
+              <input type="text" name="nama_badan_usaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
             </div>
             <div class="md:col-span-2">
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Alamat Lengkap <span class="text-red-500">*</span></label>
-              <textarea name="alamat_lengkap" rows="2" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+              <label class="block font-semibold text-sm mb-2">Alamat Lengkap <span class="text-red-500">*</span></label>
+              <textarea name="alamat_lengkap" rows="2" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></textarea>
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Nama Penanggung Jawab (PJ) <span class="text-red-500">*</span></label>
-              <input type="text" name="nama_pj" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Nama Penanggung Jawab <span class="text-red-500">*</span></label>
+              <input type="text" name="nama_pj" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">NIK Penanggung Jawab <span class="text-red-500">*</span></label>
-              <input type="number" name="nik_pj" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">NIK Penanggung Jawab <span class="text-red-500">*</span></label>
+              <input type="number" name="nik_pj" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Email <span class="text-red-500">*</span></label>
-              <input type="email" name="email" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Email <span class="text-red-500">*</span></label>
+              <input type="email" name="email" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">No. WhatsApp <span class="text-red-500">*</span></label>
-              <input type="tel" name="no_wa" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">No. WhatsApp <span class="text-red-500">*</span></label>
+              <input type="tel" name="no_wa" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Tahun Berapa Beroperasi <span class="text-red-500">*</span></label>
-              <input type="number" name="tahun_beroperasi" min="1900" max="2026" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Tahun Berapa Beroperasi <span class="text-red-500">*</span></label>
+              <input type="number" name="tahun_beroperasi" min="1900" max="2026" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Punya No. NIB? <span class="text-red-500">*</span></label>
-              <select name="punya_nib" id="punyaNib" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Punya No. NIB? <span class="text-red-500">*</span></label>
+              <select name="punya_nib" id="punyaNib" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
                 <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
               </select>
             </div>
-            <div id="fieldNoNib" class="hidden md:col-span-2 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-100 dark:border-blue-800">
-              <label class="block font-semibold text-blue-900 dark:text-blue-300 text-sm mb-2">Nomor NIB <span class="text-red-500">*</span></label>
-              <input type="text" name="no_nib" id="inputNoNib" class="w-full bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-700 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+            <!-- FIELD NIB DINAMIS -->
+            <div id="fieldNoNib" class="hidden md:col-span-2 bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg border border-blue-200 dark:border-blue-800 grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label class="block font-semibold text-blue-900 dark:text-blue-300 text-sm mb-2">Nomor NIB <span class="text-red-500">*</span></label>
+                <input type="text" name="no_nib" id="inputNoNib" class="w-full bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg p-3 outline-none">
+              </div>
+              <div>
+                <label class="block font-semibold text-blue-900 dark:text-blue-300 text-sm mb-2">Upload Foto NIB (Bisa lebih dari 1) <span class="text-red-500">*</span></label>
+                <input type="file" id="inputFotoNib" multiple accept="image/*" class="w-full bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg p-2 outline-none text-sm cursor-pointer file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                <p class="text-xs text-blue-800 dark:text-blue-400 mt-1">Saat edit draft, abaikan ini jika tidak ingin merubah foto.</p>
+              </div>
             </div>
+            <!-- SELESAI NIB -->
+
             <div class="md:col-span-2">
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Status Badan Usaha <span class="text-red-500">*</span></label>
-              <select name="status_badan_usaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Status Badan Usaha <span class="text-red-500">*</span></label>
+              <select name="status_badan_usaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
                 <option value="">-- Pilih --</option>
                 <option value="PT">PT</option><option value="PP">PP</option><option value="CV">CV</option>
                 <option value="Yayasan">Yayasan</option><option value="Koperasi">Koperasi</option>
@@ -111,18 +137,18 @@
               </select>
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Apa punya Laporan Keuangan? <span class="text-red-500">*</span></label>
-              <select name="laporan_keuangan" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Apa punya Laporan Keuangan? <span class="text-red-500">*</span></label>
+              <select name="laporan_keuangan" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
                 <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
               </select>
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Produk Utama yang Dihasilkan <span class="text-red-500">*</span></label>
-              <input type="text" name="produk_utama" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Produk Utama yang Dihasilkan <span class="text-red-500">*</span></label>
+              <input type="text" name="produk_utama" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
             </div>
             <div class="md:col-span-2">
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Jaringan Usaha <span class="text-red-500">*</span></label>
-              <select name="jaringan_usaha" id="jaringanUsaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Jaringan Usaha <span class="text-red-500">*</span></label>
+              <select name="jaringan_usaha" id="jaringanUsaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
                 <option value="">-- Pilih --</option>
                 <option value="Tunggal">Tunggal</option><option value="Kantor Pusat">Kantor Pusat</option>
                 <option value="Cabang">Cabang</option><option value="Perwakilan">Perwakilan</option>
@@ -133,59 +159,59 @@
               <p class="font-bold text-indigo-900 dark:text-indigo-300 text-sm">Informasi Kantor Pusat</p>
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="md:col-span-2">
-                  <label class="block font-medium text-slate-700 dark:text-slate-400 text-xs mb-1">Nama Kantor Pusat</label>
-                  <input type="text" name="nama_kantor_pusat" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                  <label class="block font-medium text-xs mb-1">Nama Kantor Pusat <span class="text-red-500">*</span></label>
+                  <input type="text" name="nama_kantor_pusat" id="inputKP_nama" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none">
                 </div>
                 <div>
-                  <label class="block font-medium text-slate-700 dark:text-slate-400 text-xs mb-1">Alamat Kantor Pusat</label>
-                  <input type="text" name="alamat_kantor_pusat" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                  <label class="block font-medium text-xs mb-1">Alamat Kantor Pusat <span class="text-red-500">*</span></label>
+                  <input type="text" name="alamat_kantor_pusat" id="inputKP_alamat" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none">
                 </div>
                 <div>
-                  <label class="block font-medium text-slate-700 dark:text-slate-400 text-xs mb-1">Email Kantor Pusat</label>
-                  <input type="email" name="email_kantor_pusat" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-indigo-400 outline-none">
+                  <label class="block font-medium text-xs mb-1">Email Kantor Pusat <span class="text-red-500">*</span></label>
+                  <input type="email" name="email_kantor_pusat" id="inputKP_email" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none">
                 </div>
               </div>
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Apa Terlibat KMP? <span class="text-red-500">*</span></label>
-              <select name="terlibat_kmp" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Apa Terlibat Koperasi Merah Putih ? <span class="text-red-500">*</span></label>
+              <select name="terlibat_kmp" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
                 <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
               </select>
             </div>
             <div>
-              <label class="block font-semibold text-slate-700 dark:text-slate-300 text-sm mb-2">Apa Terlibat MBG? <span class="text-red-500">*</span></label>
-              <select name="terlibat_mbg" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+              <label class="block font-semibold text-sm mb-2">Apa Terlibat Makan Bergizi Gratis ? <span class="text-red-500">*</span></label>
+              <select name="terlibat_mbg" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none">
                 <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
               </select>
             </div>
           </div>
         </section>
 
-        <!-- BAGIAN 2: RINCIAN PENGELUARAN -->
+        <!-- BAGIAN 2: PENGELUARAN -->
         <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700">
-          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">2. Rincian Pengeluaran 2025</h2>
+          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">2. Rincian Pengeluaran Selama Tahun 2025</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div><label class="block text-sm font-semibold mb-2">Gaji / Upah</label><input type="text" data-type="currency" name="pengeluaran_gaji" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            <div><label class="block text-sm font-semibold mb-2">Biaya Produksi</label><input type="text" data-type="currency" name="pengeluaran_produksi" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            <div><label class="block text-sm font-semibold mb-2">Operasional</label><input type="text" data-type="currency" name="pengeluaran_operasional" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            <div><label class="block text-sm font-semibold mb-2">Non Operasional</label><input type="text" data-type="currency" name="pengeluaran_non_operasional" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+            <div><label class="block text-sm font-semibold mb-2">Gaji / Upah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_gaji" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></div>
+            <div><label class="block text-sm font-semibold mb-2">Biaya Produksi <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_produksi" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></div>
+            <div><label class="block text-sm font-semibold mb-2">Operasional <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_operasional" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></div>
+            <div><label class="block text-sm font-semibold mb-2">Non Operasional <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_non_operasional" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></div>
           </div>
         </section>
 
         <!-- BAGIAN 3 & 4: PENDAPATAN & ASET -->
         <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700">
-          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">3 & 4. Pendapatan & Aset</h2>
+          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">3 & 4. Pendapatan & Aset Selama tahun 2025</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div><label class="block text-sm font-semibold mb-2">Pendapatan Barang & Jasa</label><input type="text" data-type="currency" name="pendapatan_barang_jasa" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            <div><label class="block text-sm font-semibold mb-2">Pendapatan Lainnya</label><input type="text" data-type="currency" name="pendapatan_lainnya" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            <div><label class="block text-sm font-semibold mb-2">Aset Tanah & Bangunan</label><input type="text" data-type="currency" name="aset_tanah_bangunan" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>
-            <div><label class="block text-sm font-semibold mb-2">Aset Non-Tanah</label><input type="text" data-type="currency" name="aset_non_tanah" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none"></div>
+            <div><label class="block text-sm font-semibold mb-2">Pendapatan Barang & Jasa <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_barang_jasa" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></div>
+            <div><label class="block text-sm font-semibold mb-2">Pendapatan Lainnya <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_lainnya" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></div>
+            <div><label class="block text-sm font-semibold mb-2">Aset Tanah & Bangunan <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="aset_tanah_bangunan" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></div>
+            <div><label class="block text-sm font-semibold mb-2">Aset Non-Tanah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="aset_non_tanah" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none"></div>
             
             <div class="md:col-span-2">
-              <label class="block text-sm font-semibold mb-2">Luas Tempat Usaha</label>
+              <label class="block text-sm font-semibold mb-2">Luas Tempat Usaha <span class="text-red-500">*</span></label>
               <div class="flex">
-                <input type="number" name="luas_tempat_usaha" placeholder="Angka luas..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-l-lg p-3 focus:ring-2 focus:ring-blue-500 outline-none border-r-0">
-                <select name="satuan_luas" class="bg-gray-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-r-lg p-3 outline-none font-semibold cursor-pointer">
+                <input type="number" required name="luas_tempat_usaha" placeholder="Angka luas..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-l-lg p-3 outline-none border-r-0">
+                <select name="satuan_luas" required class="bg-gray-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-r-lg p-3 outline-none font-semibold cursor-pointer">
                   <option value="m²">m²</option>
                   <option value="ubin">ubin</option>
                 </select>
@@ -196,85 +222,127 @@
 
         <!-- TOMBOL -->
         <div class="flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-200 dark:border-slate-700">
-          <button type="button" id="btnSaveServerDraft" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
-            Simpan ke Draft Server
+          <button type="button" id="btnSaveServerDraft" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2">
+            Simpan Draft Sementara
           </button>
           <button type="button" id="btnResetForm" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2">
             Form Baru
           </button>
-          <button type="submit" id="btnSubmitFinal" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
-            Kirim Data Final (Timpa)
+          <button type="submit" id="btnSubmitFinal" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-3.5 px-6 rounded-xl transition flex items-center justify-center gap-2">
+            Kirim Data Final
           </button>
         </div>
       </form>
     </div>
 
-    <!-- MODUL RIWAYAT & PENCARIAN DI BAWAH -->
+    <!-- MODUL RIWAYAT & PENCARIAN -->
     <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-slate-200 dark:border-slate-700 overflow-hidden mt-8 transition-colors">
-      <div class="bg-slate-100 dark:bg-slate-700/50 px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="bg-slate-100 dark:bg-slate-700/50 px-6 py-5 border-b border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
         <div>
-          <h2 class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2 text-lg">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Riwayat & Pencarian Data
-          </h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Lihat data yang sudah tersimpan atau cari untuk melanjutkan Draft.</p>
+          <h2 class="font-bold text-slate-800 dark:text-slate-200 text-lg">Riwayat & Pencarian</h2>
+          <p class="text-xs text-slate-500">Cari draft untuk dilanjutkan (Data Final terkunci).</p>
         </div>
-        <div class="flex w-full md:w-auto gap-2">
-          <input type="text" id="inputSearch" placeholder="Cari Nama Usaha..." class="w-full md:w-64 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+        <div class="w-full md:w-auto">
+          <input type="text" id="inputSearch" placeholder="Cari Nama Usaha..." class="w-full md:w-64 bg-white dark:bg-slate-900 border border-slate-300 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
         </div>
       </div>
       
-      <!-- Area Daftar Riwayat -->
       <div class="p-4 bg-slate-50 dark:bg-slate-800/80">
-        <div class="text-center text-slate-500 dark:text-slate-400 text-sm py-8" id="historyLoading">
-          <svg class="animate-spin h-6 w-6 mx-auto mb-2 text-blue-500" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
-          Memuat riwayat dari server...
-        </div>
-        <div class="text-center text-slate-500 dark:text-slate-400 text-sm hidden py-6" id="historyEmpty">Belum ada data atau tidak ditemukan.</div>
-        <div id="historyList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 hidden">
-          <!-- Item riwayat disisipkan via JS -->
-        </div>
+        <div class="text-center text-slate-500 text-sm py-8" id="historyLoading">Memuat data dari server...</div>
+        <div class="text-center text-slate-500 text-sm hidden py-6" id="historyEmpty">Belum ada riwayat.</div>
+        <div id="historyList" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 hidden"></div>
       </div>
     </div>
-
   </div>
 
   <script>
-    // GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYW3dJC2Vph0lO7wYPj30HEnUBIDHnGUs-vHwvMG6ltDZNSGdk96VX1Lig06lfvFMF/exec'; 
-    
+    // GANTI DENGAN URL WEB APP GOOGLE APPS SCRIPT ANDA!
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxJcYmYCBi7EQB2vP-okr1esuapOrujlxORxjkVdbWri36gUt1oH2q5XaT37ONAkMM3/exec'; 
+
     const form = document.getElementById('sensusForm');
     const toast = document.getElementById('toastNotification');
     const toastMessage = document.getElementById('toastMessage');
-    let allDataCache = []; // Cache riwayat data
+    const loginOverlay = document.getElementById('loginOverlay');
+    const mainApp = document.getElementById('mainApp');
+    let allDataCache = []; 
+    let currentSheetName = "";
 
+    // CEK LOGIN STATE
+    if(sessionStorage.getItem('petugas_sheet')) {
+       loginOverlay.classList.add('hidden');
+       mainApp.classList.remove('hidden');
+       currentSheetName = sessionStorage.getItem('petugas_sheet');
+       document.getElementById('labelPetugas').innerText = sessionStorage.getItem('petugas_user');
+       loadHistory();
+    }
+
+    // FUNGSI LOGIN
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnLogin');
+      const err = document.getElementById('loginError');
+      const user = document.getElementById('loginUsername').value;
+      const pass = document.getElementById('loginPassword').value;
+      
+      err.classList.add('hidden');
+      btn.innerHTML = "Memeriksa..."; btn.disabled = true;
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'login', username: user, password: pass })
+        });
+        const res = await response.json();
+        
+        if(res.status === 'success') {
+          sessionStorage.setItem('petugas_sheet', res.sheetName);
+          sessionStorage.setItem('petugas_user', user);
+          currentSheetName = res.sheetName;
+          document.getElementById('labelPetugas').innerText = user;
+          
+          loginOverlay.classList.add('opacity-0');
+          setTimeout(() => {
+            loginOverlay.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+            loadHistory();
+          }, 300);
+        } else {
+          err.innerText = res.message;
+          err.classList.remove('hidden');
+        }
+      } catch (error) {
+        err.innerText = "Gagal terhubung ke server.";
+        err.classList.remove('hidden');
+      } finally {
+        btn.innerHTML = "Masuk"; btn.disabled = false;
+      }
+    });
+
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      sessionStorage.clear();
+      window.location.reload();
+    });
+
+    // DARK MODE
     const btnDarkMode = document.getElementById('btnDarkMode');
     const htmlTag = document.documentElement;
     const iconSun = document.getElementById('iconSun');
     const iconMoon = document.getElementById('iconMoon');
 
-    // Cek local storage untuk dark mode
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-      htmlTag.classList.add('dark');
-      iconSun.classList.remove('hidden');
-      iconMoon.classList.add('hidden');
+      htmlTag.classList.add('dark'); iconSun.classList.remove('hidden'); iconMoon.classList.add('hidden');
     }
-
     btnDarkMode.addEventListener('click', () => {
       htmlTag.classList.toggle('dark');
       if (htmlTag.classList.contains('dark')) {
-        localStorage.theme = 'dark';
-        iconSun.classList.remove('hidden');
-        iconMoon.classList.add('hidden');
+        localStorage.theme = 'dark'; iconSun.classList.remove('hidden'); iconMoon.classList.add('hidden');
       } else {
-        localStorage.theme = 'light';
-        iconSun.classList.add('hidden');
-        iconMoon.classList.remove('hidden');
+        localStorage.theme = 'light'; iconSun.classList.add('hidden'); iconMoon.classList.remove('hidden');
       }
     });
 
+    // FORMAT RUPIAH
     const currencyInputs = document.querySelectorAll('input[data-type="currency"]');
-    
     function formatRupiah(angka) {
       let number_string = angka.replace(/[^,\d]/g, '').toString();
       let split = number_string.split(',');
@@ -285,54 +353,69 @@
         let separator = sisa ? '.' : '';
         rupiah += separator + ribuan.join('.');
       }
-      rupiah = split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
       return rupiah ? 'Rp ' + rupiah : '';
     }
-
     currencyInputs.forEach(input => {
-      input.addEventListener('keyup', function(e) {
-        this.value = formatRupiah(this.value);
-      });
+      input.addEventListener('keyup', function() { this.value = formatRupiah(this.value); });
     });
 
+    // TOGGLE WAJIB ISI (REQUIRED)
     document.getElementById('punyaNib').addEventListener('change', (e) => {
       const field = document.getElementById('fieldNoNib');
-      const input = document.getElementById('inputNoNib');
-      if (e.target.value === 'Ya') { field.classList.remove('hidden'); input.required = true; } 
-      else { field.classList.add('hidden'); input.required = false; input.value = ''; }
+      const inputNo = document.getElementById('inputNoNib');
+      const inputFoto = document.getElementById('inputFotoNib');
+      if (e.target.value === 'Ya') { 
+        field.classList.remove('hidden'); 
+        inputNo.required = true; 
+        // Foto wajib jika buat baru, namun jika edit bisa dikosongi
+        if(document.getElementById('sensusId').value === '') inputFoto.required = true; 
+      } else { 
+        field.classList.add('hidden'); 
+        inputNo.required = false; inputNo.value = ''; 
+        inputFoto.required = false; inputFoto.value = '';
+      }
     });
 
     document.getElementById('jaringanUsaha').addEventListener('change', (e) => {
       const field = document.getElementById('fieldKantorPusat');
+      const kpNama = document.getElementById('inputKP_nama');
+      const kpAlamat = document.getElementById('inputKP_alamat');
+      const kpEmail = document.getElementById('inputKP_email');
+      
       if (['Cabang', 'Perwakilan', 'Pabrik', 'Unit Penunjang'].includes(e.target.value)) {
         field.classList.remove('hidden');
-      } else { field.classList.add('hidden'); }
+        kpNama.required = true; kpAlamat.required = true; kpEmail.required = true;
+      } else { 
+        field.classList.add('hidden'); 
+        kpNama.required = false; kpAlamat.required = false; kpEmail.required = false;
+      }
     });
 
     function showToast(message, type = 'success') {
       toastMessage.innerText = message;
-      toast.className = `fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 z-50 ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`;
+      toast.className = `fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 z-[200] ${type === 'success' ? 'bg-emerald-500' : 'bg-red-500'}`;
       setTimeout(() => toast.classList.add('opacity-0', '-translate-y-5'), 3500);
     }
 
     function setButtonLoading(btn, isLoading, text) {
       if(isLoading) {
-        btn.disabled = true;
-        btn.dataset.original = btn.innerHTML;
+        btn.disabled = true; btn.dataset.original = btn.innerHTML;
         btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-2 text-white inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...`;
       } else {
-        btn.disabled = false;
-        btn.innerHTML = btn.dataset.original || text;
+        btn.disabled = false; btn.innerHTML = btn.dataset.original || text;
       }
     }
 
     async function loadHistory() {
+      if(!currentSheetName) return;
       const loading = document.getElementById('historyLoading');
       const list = document.getElementById('historyList');
       const empty = document.getElementById('historyEmpty');
+      
+      list.classList.add('hidden'); empty.classList.add('hidden'); loading.classList.remove('hidden');
 
       try {
-        const response = await fetch(`${SCRIPT_URL}?action=getData`);
+        const response = await fetch(`${SCRIPT_URL}?sheetName=${currentSheetName}`);
         const result = await response.json();
         
         loading.classList.add('hidden');
@@ -341,9 +424,7 @@
           renderHistory(allDataCache);
         }
       } catch (error) {
-        loading.innerHTML = 'Gagal memuat riwayat. Periksa koneksi.';
-        loading.classList.remove('text-blue-500');
-        loading.classList.add('text-red-500');
+        loading.innerHTML = 'Gagal memuat riwayat.';
       }
     }
 
@@ -353,35 +434,30 @@
       list.innerHTML = '';
 
       if (dataArray.length === 0) {
-        empty.classList.remove('hidden');
-        list.classList.add('hidden');
-        return;
+        empty.classList.remove('hidden'); list.classList.add('hidden'); return;
       }
+      empty.classList.add('hidden'); list.classList.remove('hidden');
 
-      empty.classList.add('hidden');
-      list.classList.remove('hidden');
-
-      // Tampilkan data, urut dari yang terbaru
       const displayData = [...dataArray].reverse();
-
       displayData.forEach(item => {
         const isDraft = item.status_data === 'Draft';
-        const badgeClass = isDraft ? 'bg-amber-100 text-amber-800 border-amber-200 dark:bg-amber-900/50 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 border-emerald-200 dark:bg-emerald-900/50 dark:text-emerald-300';
+        const isFinal = item.status_data === 'Final';
+        const badgeClass = isDraft ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300';
         
         const card = document.createElement('div');
-        card.className = "bg-white dark:bg-slate-800 p-4 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col justify-between";
+        card.className = `p-4 rounded-xl border shadow-sm flex flex-col justify-between ${isFinal ? 'bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-800 opacity-80' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`;
         card.innerHTML = `
           <div>
             <div class="flex justify-between items-start mb-2">
-              <h3 class="font-bold text-slate-800 dark:text-slate-100 line-clamp-1">${item.nama_badan_usaha || 'Tanpa Nama'}</h3>
+              <h3 class="font-bold line-clamp-1">${item.nama_badan_usaha || 'Tanpa Nama'}</h3>
               <span class="text-xs px-2 py-0.5 rounded-full border font-semibold ${badgeClass}">${item.status_data}</span>
             </div>
-            <p class="text-xs text-slate-500 dark:text-slate-400 mb-1">PJ: ${item.nama_pj || '-'}</p>
-            <p class="text-[10px] text-slate-400 dark:text-slate-500 uppercase">ID: ${item.id}</p>
+            <p class="text-xs text-slate-500 mb-1">PJ: ${item.nama_pj || '-'}</p>
           </div>
-          <button type="button" onclick="loadToForm('${item.id}')" class="mt-4 w-full bg-slate-50 dark:bg-slate-700 hover:bg-blue-50 dark:hover:bg-blue-900 hover:text-blue-700 dark:hover:text-blue-300 text-slate-700 dark:text-slate-200 text-sm font-semibold py-2 rounded-lg transition border border-slate-200 dark:border-slate-600">
-            ${isDraft ? 'Lanjutkan Draft' : 'Edit Data'}
-          </button>
+          ${isFinal 
+            ? `<button disabled class="mt-4 w-full bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed text-sm font-bold py-2 rounded-lg border border-slate-300 dark:border-slate-700">Terkunci (Final)</button>` 
+            : `<button type="button" onclick="loadToForm('${item.id}')" class="mt-4 w-full bg-slate-50 dark:bg-slate-700 hover:bg-blue-50 text-slate-700 dark:text-slate-200 hover:text-blue-700 text-sm font-bold py-2 rounded-lg transition border border-slate-200">Lanjutkan Draft</button>`
+          }
         `;
         list.appendChild(card);
       });
@@ -389,10 +465,7 @@
 
     document.getElementById('inputSearch').addEventListener('input', function(e) {
       const keyword = e.target.value.toLowerCase();
-      const filtered = allDataCache.filter(item => 
-        (item.nama_badan_usaha && item.nama_badan_usaha.toLowerCase().includes(keyword)) ||
-        (item.nama_pj && item.nama_pj.toLowerCase().includes(keyword))
-      );
+      const filtered = allDataCache.filter(item => (item.nama_badan_usaha && item.nama_badan_usaha.toLowerCase().includes(keyword)));
       renderHistory(filtered);
     });
 
@@ -402,15 +475,15 @@
 
       Object.keys(data).forEach(key => {
         const field = form.elements[key];
-        if (field) {
-          // Format mata uang jika type currency
-          if(field.dataset.type === 'currency') {
-             field.value = data[key] ? formatRupiah(data[key].toString()) : '';
-          } else {
-             field.value = data[key];
-          }
+        if (field && key !== 'foto_nib') {
+          if(field.dataset.type === 'currency') field.value = data[key] ? formatRupiah(data[key].toString()) : '';
+          else field.value = data[key];
         }
       });
+
+      document.getElementById('sensusId').value = data.id;
+      // Jangan paksa upload foto saat edit jika sudah punya foto
+      document.getElementById('inputFotoNib').required = false; 
 
       document.getElementById('punyaNib').dispatchEvent(new Event('change'));
       document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
@@ -418,7 +491,7 @@
       document.getElementById('activeDraftNotice').classList.remove('hidden');
       document.getElementById('activeDraftName').innerText = data.nama_badan_usaha;
       
-      showToast('Data dimuat ke formulir.', 'success');
+      showToast('Draft dimuat ke formulir.', 'success');
       form.scrollIntoView({ behavior: 'smooth' });
     };
 
@@ -426,15 +499,41 @@
       form.reset();
       document.getElementById('sensusId').value = '';
       document.getElementById('activeDraftNotice').classList.add('hidden');
+      document.getElementById('inputFotoNib').required = true;
       document.getElementById('punyaNib').dispatchEvent(new Event('change'));
       document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
-      showToast('Formulir siap untuk data baru.', 'success');
     });
 
+    // COMPRESS IMAGE TO BASE64
+    async function compressImageAndGetBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800; // Kecilkan ke 800px agar ringan dikirim
+            const scaleSize = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.6); // Kualitas 60%
+            const base64 = compressedDataUrl.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+            
+            resolve({ name: file.name, mimeType: 'image/jpeg', base64: base64 });
+          };
+        };
+        reader.onerror = error => reject(error);
+      });
+    }
+
     async function postData(statusType, btnElement) {
-      if (statusType === 'Final' && !form.checkValidity()) {
-        form.reportValidity();
-        return;
+      if (!form.checkValidity()) {
+        form.reportValidity(); return;
       }
 
       setButtonLoading(btnElement, true, statusType === 'Final' ? 'Kirim Data Final' : 'Simpan Draft');
@@ -443,56 +542,54 @@
       const formData = new FormData(form);
       const data = Object.fromEntries(formData.entries());
 
-      // BERSIHKAN FORMAT RUPIAH (Buang 'Rp ' dan titik) sebelum dikirim
+      // Bersihkan format Rp
       currencyInputs.forEach(input => {
         const name = input.name;
-        if(data[name]) {
-          data[name] = data[name].replace(/[^0-9]/g, ''); // Hanya simpan angkanya
-        }
+        if(data[name]) data[name] = data[name].replace(/[^0-9]/g, ''); 
       });
+
+      // Sisipkan URL existing jika sedang mengedit
+      const idSensus = document.getElementById('sensusId').value;
+      if (idSensus) {
+        const existingData = allDataCache.find(item => item.id === idSensus);
+        if(existingData && existingData.foto_nib) data.foto_urls_existing = existingData.foto_nib;
+      }
+
+      // Proses File Base64
+      let filesBase64 = [];
+      const fileInput = document.getElementById('inputFotoNib');
+      if(fileInput.files.length > 0) {
+        for(let i = 0; i < fileInput.files.length; i++) {
+          const base64Data = await compressImageAndGetBase64(fileInput.files[i]);
+          filesBase64.push(base64Data);
+        }
+      }
+
+      const payload = {
+        action: 'save',
+        sheetName: currentSheetName,
+        data: data,
+        files: filesBase64
+      };
 
       try {
         const response = await fetch(SCRIPT_URL, {
           method: 'POST',
-          body: JSON.stringify(data) 
+          body: JSON.stringify(payload) 
         });
-        
         const result = await response.json();
 
         if (result.status === 'success') {
           showToast(result.message, 'success');
-          document.getElementById('sensusId').value = result.id;
-          
-          if(statusType === 'Final') {
-             document.getElementById('btnResetForm').click();
-          } else {
-             document.getElementById('activeDraftNotice').classList.remove('hidden');
-             document.getElementById('activeDraftName').innerText = data.nama_badan_usaha;
-          }
-          
-          // Refresh riwayat di bawah
+          if(statusType === 'Final') document.getElementById('btnResetForm').click();
           loadHistory(); 
-        } else {
-          showToast(result.message, 'error');
-        }
-      } catch (error) {
-        showToast('Terjadi kesalahan jaringan.', 'error');
-      } finally {
-        setButtonLoading(btnElement, false);
-      }
+        } else { showToast(result.message, 'error'); }
+      } catch (error) { showToast('Terjadi kesalahan jaringan.', 'error'); } 
+      finally { setButtonLoading(btnElement, false); }
     }
 
-    document.getElementById('btnSaveServerDraft').addEventListener('click', function() {
-      postData('Draft', this);
-    });
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-      postData('Final', document.getElementById('btnSubmitFinal'));
-    });
-
-    // Panggil history saat pertama kali load
-    window.onload = loadHistory;
+    document.getElementById('btnSaveServerDraft').addEventListener('click', function() { postData('Draft', this); });
+    form.addEventListener('submit', function(e) { e.preventDefault(); postData('Final', document.getElementById('btnSubmitFinal')); });
 
   </script>
 </body>
