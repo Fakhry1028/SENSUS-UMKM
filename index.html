@@ -15,6 +15,37 @@
     ::-webkit-scrollbar-track { background: transparent; }
     ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     .dark ::-webkit-scrollbar-thumb { background: #475569; }
+    
+    /* PERBAIKAN UI MOBILE: LEBIH LUAS DAN NYAMAN */
+    input[type="text"], input[type="number"], input[type="email"], input[type="tel"], input[type="password"], textarea, select {
+        padding: 1.1rem 1.25rem !important;
+        font-size: 1.05rem !important;
+        line-height: 1.5 !important;
+        border-radius: 0.75rem !important;
+        background-color: #f8fafc !important;
+        border-color: #cbd5e1 !important;
+    }
+    .dark input, .dark textarea, .dark select {
+        background-color: #1e293b !important;
+        border-color: #334155 !important;
+        color: #f8fafc !important;
+    }
+    label {
+        margin-bottom: 0.6rem !important;
+        font-size: 0.95rem !important;
+        font-weight: 600 !important;
+        color: #334155;
+    }
+    .dark label { color: #cbd5e1; }
+    
+    section {
+        padding: 1.5rem !important;
+        margin-bottom: 2rem !important;
+        border-radius: 1rem !important;
+    }
+    @media (min-width: 768px) {
+        section { padding: 2rem !important; }
+    }
   </style>
 </head>
 <body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans min-h-screen py-8 px-4 relative transition-colors duration-300">
@@ -66,7 +97,7 @@
           <h3 class="text-xl font-bold text-slate-800 dark:text-white">Detail Data Sensus</h3>
           <p id="detStatusBadge" class="text-xs font-bold px-2 py-1 rounded-full mt-1 inline-block"></p>
         </div>
-        <button type="button" onclick="document.getElementById('detailOverlay').classList.add('hidden')" class="p-2 bg-slate-200 dark:bg-slate-700 rounded-full hover:bg-slate-300 dark:hover:bg-slate-600 transition text-slate-700 dark:text-slate-200">
+        <button type="button" onclick="history.back()" class="p-2 bg-slate-200 dark:bg-slate-700 rounded-full hover:bg-slate-300 dark:hover:bg-slate-600 transition text-slate-700 dark:text-slate-200">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
@@ -189,7 +220,7 @@
       </div>
 
       <div id="activeDraftNotice" class="hidden bg-emerald-50 dark:bg-emerald-900/30 border-b border-emerald-100 dark:border-emerald-800 p-4 text-emerald-800 dark:text-emerald-400 text-sm text-center">
-        <span class="font-bold">✨ Mode Edit Draft : <span id="activeDraftName" class="font-normal italic"></span></span>
+        <span class="font-bold">Mode Edit Draft : <span id="activeDraftName" class="font-normal italic"></span></span>
       </div>
 
       <!-- Form Utama: onsubmit dicegah agar validasi custom bisa jalan tanpa reload -->
@@ -352,9 +383,21 @@
               
               <!-- Container Foto Lama (Muncul jika edit draft) -->
               <div id="existingPhotosContainer" class="hidden mb-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
-                <p class="text-xs font-bold text-slate-500 mb-2">📸 Foto Tersimpan (Dari Draft Sebelumnya):</p>
-                <div id="existingPhotosList" class="flex gap-2 overflow-x-auto pb-2"></div>
-              </div>
+              <p class="text-xs font-bold text-slate-500 mb-2">Foto Tersimpan (Dari Draft Sebelumnya):</p>
+              <div id="existingPhotosList" class="flex gap-2 overflow-x-auto pb-2"></div>
+            </div>
+
+            <!-- Tombol Pilih Foto -->
+            <div class="flex flex-col sm:flex-row gap-3 mb-2">
+              <label class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-4 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
+                Buka Kamera
+                <input type="file" id="inputFotoCamera" accept="image/*" capture="environment" class="hidden">
+              </label>
+              <label class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-4 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
+                Pilih dari Galeri
+                <input type="file" id="inputFotoGallery" accept="image/*" multiple class="hidden">
+              </label>
+            </div>
 
               <!-- Tombol Pilih Foto -->
               <div class="flex flex-col sm:flex-row gap-3 mb-2">
@@ -386,15 +429,15 @@
         </section>
 
         <!-- TOMBOL SIMPAN / KIRIM -->
-        <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-200 dark:border-slate-700 sticky bottom-4 z-50">
-          <button type="button" id="btnSaveServerDraft" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
-            💾 Simpan Draft (Abaikan Kolom Kosong)
+        <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-200 dark:border-slate-700 sticky bottom-0 z-50 bg-white dark:bg-slate-800 p-5 rounded-b-2xl shadow-[0_-10px_15px_-3px_rgba(0,0,0,0.1)] -mx-6 md:-mx-8">
+          <button type="button" id="btnSaveServerDraft" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg tracking-wide">
+            Simpan Draft
           </button>
           <button type="button" id="btnResetForm" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
             Form Baru
           </button>
-          <button type="button" id="btnSubmitFinal" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
-            🚀 Kirim Data Final (Wajib Lengkap)
+          <button type="button" id="btnSubmitFinal" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg tracking-wide">
+            Kirim Data Final
           </button>
         </div>
       </form>
@@ -474,15 +517,16 @@
 
     // SIDEBAR & PASSWORD LOGIC
     document.getElementById('btnOpenSidebar').addEventListener('click', () => {
+      history.pushState({ modal: 'pass' }, "");
       passwordOverlay.classList.remove('hidden');
       document.getElementById('historyPassword').value = '';
       document.getElementById('historyError').classList.add('hidden');
     });
     document.getElementById('btnCancelHistory').addEventListener('click', () => {
-      passwordOverlay.classList.add('hidden');
+      history.back();
     });
     document.getElementById('btnCloseSidebar').addEventListener('click', () => {
-      sidebarHistory.classList.add('-translate-x-full');
+      history.back();
     });
 
     document.getElementById('btnVerifyHistory').addEventListener('click', () => {
@@ -496,6 +540,13 @@
       } else {
         document.getElementById('historyError').classList.remove('hidden');
       }
+    });
+
+    // GLOBAL LISTENER UNTUK TOMBOL BACK DI HP
+    window.addEventListener('popstate', (e) => {
+      document.getElementById('passwordOverlay').classList.add('hidden');
+      document.getElementById('sidebarHistory').classList.add('-translate-x-full');
+      document.getElementById('detailOverlay').classList.add('hidden');
     });
 
     // DARK MODE GABUNGAN
@@ -563,28 +614,14 @@
       return '';
     }
 
-    // FILE INPUT HANDLER (Kamera & Galeri) DENGAN PREVIEW
-    async function compressImageAndGetBase64(file) {
+    // FILE INPUT HANDLER (KUALITAS ASLI TANPA KOMPRESI)
+    async function getOriginalBase64(file) {
       return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = (e) => {
-          const img = new Image();
-          img.src = e.target.result;
-          img.onload = () => {
-            const canvas = document.createElement('canvas');
-            const MAX_WIDTH = 800; // Kecilkan ke 800px agar cepat upload
-            const scaleSize = MAX_WIDTH / img.width;
-            canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
-            
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-            
-            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); 
-            const base64 = compressedDataUrl.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
-            
-            resolve({ name: file.name, mimeType: 'image/jpeg', base64: base64 });
-          };
+          const base64 = e.target.result.split(',')[1];
+          resolve({ name: file.name, mimeType: file.type || 'image/jpeg', base64: base64 });
         };
         reader.onerror = error => reject(error);
       });
@@ -596,7 +633,7 @@
       
       showToast('Memproses & memuat foto...', 'success');
       for(let i = 0; i < files.length; i++) {
-         const base64Data = await compressImageAndGetBase64(files[i]);
+         const base64Data = await getOriginalBase64(files[i]);
          stagedFilesArray.push({ id: Date.now() + i, ...base64Data });
       }
       renderStagedFiles();
@@ -887,6 +924,7 @@
            photoContainer.innerHTML = '<span class="text-sm text-slate-500 italic">Tidak ada foto yang dilampirkan.</span>';
        }
 
+       history.pushState({ modal: 'detail' }, "");
        document.getElementById('detailOverlay').classList.remove('hidden');
     }
 
@@ -952,7 +990,7 @@
         }
       }
 
-      setButtonLoading(btnElement, true, statusType === 'Final' ? '🚀 Kirim Data Final' : '💾 Simpan Draft');
+      setButtonLoading(btnElement, true, statusType === 'Final' ? 'Kirim Data Final' : 'Simpan Draft');
       document.getElementById('statusData').value = statusType;
 
       const formData = new FormData(form);
