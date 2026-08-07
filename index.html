@@ -57,6 +57,82 @@
     </div>
   </div>
 
+  <!-- MODAL DETAIL DATA (READ-ONLY) -->
+  <div id="detailOverlay" class="fixed inset-0 bg-slate-900/90 z-[300] hidden flex items-center justify-center p-4 transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-slate-200 dark:border-slate-700">
+      <!-- Header -->
+      <div class="p-5 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center bg-slate-50 dark:bg-slate-800/80 rounded-t-2xl">
+        <div>
+          <h3 class="text-xl font-bold text-slate-800 dark:text-white">Detail Data Sensus</h3>
+          <p id="detStatusBadge" class="text-xs font-bold px-2 py-1 rounded-full mt-1 inline-block"></p>
+        </div>
+        <button type="button" onclick="document.getElementById('detailOverlay').classList.add('hidden')" class="p-2 bg-slate-200 dark:bg-slate-700 rounded-full hover:bg-slate-300 dark:hover:bg-slate-600 transition text-slate-700 dark:text-slate-200">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <!-- Body -->
+      <div class="p-5 overflow-y-auto space-y-6 flex-1 text-sm text-slate-700 dark:text-slate-300">
+          <!-- Identitas Usaha -->
+          <div>
+            <h4 class="font-bold text-blue-700 dark:text-blue-400 mb-3 border-b border-slate-200 dark:border-slate-700 pb-1">Identitas Badan Usaha</h4>
+            <div class="grid grid-cols-2 gap-y-2 gap-x-4">
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Nama Usaha:</span><span id="detNama" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">PJ:</span><span id="detPJ" class="font-semibold"></span></div>
+                <div class="col-span-2"><span class="block text-xs text-slate-500">Alamat:</span><span id="detAlamat" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">NIK PJ:</span><span id="detNIK" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">No. WA:</span><span id="detWA" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Email:</span><span id="detEmail" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Thn Operasi:</span><span id="detTahun" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Punya NIB:</span><span id="detPunyaNIB" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">No. NIB:</span><span id="detNoNIB" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Status BU:</span><span id="detStatusBU" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Lap. Keuangan:</span><span id="detLapKeu" class="font-semibold"></span></div>
+                <div class="col-span-2"><span class="block text-xs text-slate-500">Produk Utama:</span><span id="detProduk" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Jaringan Usaha:</span><span id="detJaringan" class="font-semibold"></span></div>
+                <div id="detWrapPusat" class="col-span-2 hidden bg-slate-50 dark:bg-slate-900/50 p-3 rounded-lg border border-slate-200 dark:border-slate-700 mt-2">
+                  <span class="block text-xs font-bold text-slate-500 mb-2">Info Kantor Pusat:</span>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                      <div class="col-span-1 sm:col-span-2"><span class="block text-[10px] text-slate-500">Nama KP:</span><span id="detNamaKP" class="font-semibold"></span></div>
+                      <div class="col-span-1 sm:col-span-2"><span class="block text-[10px] text-slate-500">Alamat KP:</span><span id="detAlamatKP" class="font-semibold"></span></div>
+                      <div class="col-span-1 sm:col-span-2"><span class="block text-[10px] text-slate-500">Email KP:</span><span id="detEmailKP" class="font-semibold"></span></div>
+                  </div>
+                </div>
+                <div class="col-span-2 sm:col-span-1 mt-2"><span class="block text-xs text-slate-500">Terlibat KMP:</span><span id="detKMP" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1 mt-2"><span class="block text-xs text-slate-500">Terlibat MBG:</span><span id="detMBG" class="font-semibold"></span></div>
+            </div>
+          </div>
+          <!-- Keuangan -->
+          <div>
+            <h4 class="font-bold text-emerald-700 dark:text-emerald-400 mb-3 border-b border-slate-200 dark:border-slate-700 pb-1">Keuangan & Aset (Rp)</h4>
+            <div class="grid grid-cols-2 gap-y-2 gap-x-4">
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Peng. Gaji:</span><span id="detGaji" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Peng. Produksi:</span><span id="detProduksi" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Peng. Ops:</span><span id="detOps" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Peng. Non-Ops:</span><span id="detNonOps" class="font-semibold"></span></div>
+                <div class="col-span-2 my-1 border-t border-slate-100 dark:border-slate-700"></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Pend. Barang/Jasa:</span><span id="detPendBarang" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Pend. Lainnya:</span><span id="detPendLain" class="font-semibold"></span></div>
+                <div class="col-span-2 my-1 border-t border-slate-100 dark:border-slate-700"></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Aset Tanah & Bgn:</span><span id="detAsetTanah" class="font-semibold"></span></div>
+                <div class="col-span-2 sm:col-span-1"><span class="block text-xs text-slate-500">Aset Non-Tanah:</span><span id="detAsetNon" class="font-semibold"></span></div>
+            </div>
+          </div>
+          <!-- Lainnya & Foto -->
+          <div>
+            <h4 class="font-bold text-indigo-700 dark:text-indigo-400 mb-3 border-b border-slate-200 dark:border-slate-700 pb-1">Lainnya</h4>
+            <div class="grid grid-cols-1 gap-y-3">
+                <div><span class="block text-xs text-slate-500">Luas Tempat Usaha:</span><span id="detLuas" class="font-semibold"></span></div>
+                <div><span class="block text-xs text-slate-500">Catatan:</span><span id="detCatatan" class="font-semibold"></span></div>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-bold text-amber-700 dark:text-amber-400 mb-3 border-b border-slate-200 dark:border-slate-700 pb-1">Lampiran Foto NIB</h4>
+            <div id="detPhotos" class="flex flex-wrap gap-3"></div>
+          </div>
+      </div>
+    </div>
+  </div>
+
   <!-- SIDEBAR RIWAYAT (Geser Kiri) -->
   <div id="sidebarHistory" class="fixed inset-y-0 left-0 w-full sm:w-[400px] bg-white dark:bg-slate-800 shadow-2xl z-[140] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-slate-200 dark:border-slate-700">
     <div class="p-5 bg-slate-100 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
@@ -642,9 +718,12 @@
           </div>
           ${photosHtml}
           ${isFinal 
-            ? `<button disabled class="mt-4 w-full bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed text-sm font-bold py-2 rounded-lg border border-slate-300 dark:border-slate-700">Terkunci (Final)</button>` 
+            ? `<div class="mt-4 flex gap-2">
+                 <button type="button" onclick="viewDetail('${item.id}')" class="w-full bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-sm font-bold py-2 rounded-lg border border-slate-300 dark:border-slate-700 hover:bg-slate-300 dark:hover:bg-slate-700 transition">Lihat Detail (Terkunci)</button>
+               </div>` 
             : `<div class="mt-4 flex gap-2">
-                 <button type="button" onclick="loadToForm('${item.id}')" class="flex-1 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-sm font-bold py-2 rounded-lg transition border border-blue-200 dark:border-blue-800">Edit Draft</button>
+                 <button type="button" onclick="loadToForm('${item.id}')" class="flex-1 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-sm font-bold py-2 rounded-lg transition border border-blue-200 dark:border-blue-800">Edit</button>
+                 <button type="button" onclick="viewDetail('${item.id}')" class="px-4 bg-slate-50 dark:bg-slate-900/30 hover:bg-slate-100 dark:hover:bg-slate-900/50 text-slate-700 dark:text-slate-300 text-sm font-bold py-2 rounded-lg transition border border-slate-200 dark:border-slate-700 shadow-sm">Lihat</button>
                  <button type="button" onclick="deleteDraft('${item.id}')" class="px-4 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 text-sm font-bold py-2 rounded-lg transition border border-red-200 dark:border-red-800 shadow-sm">Hapus</button>
                </div>`
           }
@@ -736,6 +815,73 @@
       showToast('Draft siap dilanjutkan.', 'success');
       form.scrollIntoView({ behavior: 'smooth' });
     };
+
+    // FUNGSI LIHAT DETAIL (READ-ONLY MODAL)
+    window.viewDetail = function(id) {
+       const data = allDataCache.find(item => item.id === id);
+       if (!data) return;
+
+       const isDraft = data.status_data === 'Draft';
+       const badge = document.getElementById('detStatusBadge');
+       badge.className = `text-xs font-bold px-3 py-1 rounded-full mt-1 inline-block ${isDraft ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300'}`;
+       badge.innerText = data.status_data;
+
+       document.getElementById('detNama').innerText = data.nama_badan_usaha || '-';
+       document.getElementById('detPJ').innerText = data.nama_pj || '-';
+       document.getElementById('detAlamat').innerText = data.alamat_lengkap || '-';
+       document.getElementById('detNIK').innerText = data.nik_pj || '-';
+       document.getElementById('detWA').innerText = data.no_wa || '-';
+       document.getElementById('detEmail').innerText = data.email || '-';
+       document.getElementById('detTahun').innerText = data.tahun_beroperasi || '-';
+       document.getElementById('detPunyaNIB').innerText = data.punya_nib || '-';
+       document.getElementById('detNoNIB').innerText = data.no_nib || '-';
+       document.getElementById('detStatusBU').innerText = data.status_badan_usaha || '-';
+       document.getElementById('detLapKeu').innerText = data.laporan_keuangan || '-';
+       document.getElementById('detProduk').innerText = data.produk_utama || '-';
+       document.getElementById('detJaringan').innerText = data.jaringan_usaha || '-';
+       
+       if (['Cabang', 'Perwakilan', 'Pabrik', 'Unit Penunjang'].includes(data.jaringan_usaha)) {
+           document.getElementById('detWrapPusat').classList.remove('hidden');
+           document.getElementById('detNamaKP').innerText = data.nama_kantor_pusat || '-';
+           document.getElementById('detAlamatKP').innerText = data.alamat_kantor_pusat || '-';
+           document.getElementById('detEmailKP').innerText = data.email_kantor_pusat || '-';
+       } else {
+           document.getElementById('detWrapPusat').classList.add('hidden');
+       }
+
+       document.getElementById('detKMP').innerText = data.terlibat_kmp || '-';
+       document.getElementById('detMBG').innerText = data.terlibat_mbg || '-';
+
+       document.getElementById('detGaji').innerText = data.pengeluaran_gaji ? formatRupiah(data.pengeluaran_gaji.toString()) : '-';
+       document.getElementById('detProduksi').innerText = data.pengeluaran_produksi ? formatRupiah(data.pengeluaran_produksi.toString()) : '-';
+       document.getElementById('detOps').innerText = data.pengeluaran_operasional ? formatRupiah(data.pengeluaran_operasional.toString()) : '-';
+       document.getElementById('detNonOps').innerText = data.pengeluaran_non_operasional ? formatRupiah(data.pengeluaran_non_operasional.toString()) : '-';
+
+       document.getElementById('detPendBarang').innerText = data.pendapatan_barang_jasa ? formatRupiah(data.pendapatan_barang_jasa.toString()) : '-';
+       document.getElementById('detPendLain').innerText = data.pendapatan_lainnya ? formatRupiah(data.pendapatan_lainnya.toString()) : '-';
+
+       document.getElementById('detAsetTanah').innerText = data.aset_tanah_bangunan ? formatRupiah(data.aset_tanah_bangunan.toString()) : '-';
+       document.getElementById('detAsetNon').innerText = data.aset_non_tanah ? formatRupiah(data.aset_non_tanah.toString()) : '-';
+
+       document.getElementById('detLuas').innerText = `${data.luas_tempat_usaha || '-'} ${data.satuan_luas || ''}`;
+       document.getElementById('detCatatan').innerText = data.catatan || '-';
+
+       const photoContainer = document.getElementById('detPhotos');
+       photoContainer.innerHTML = '';
+       if (data.foto_nib && data.foto_nib !== '-') {
+           const urls = data.foto_nib.split(' , \n');
+           urls.forEach(url => {
+               const thumb = getDriveThumbnail(url);
+               if (thumb) {
+                   photoContainer.innerHTML += `<a href="${url}" target="_blank" class="block border-2 border-slate-200 dark:border-slate-600 rounded-lg overflow-hidden hover:opacity-80 transition"><img src="${thumb}" class="w-24 h-24 sm:w-32 sm:h-32 object-cover"></a>`;
+               }
+           });
+       } else {
+           photoContainer.innerHTML = '<span class="text-sm text-slate-500 italic">Tidak ada foto yang dilampirkan.</span>';
+       }
+
+       document.getElementById('detailOverlay').classList.remove('hidden');
+    }
 
     document.getElementById('btnResetForm').addEventListener('click', () => {
       form.reset();
