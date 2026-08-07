@@ -1,151 +1,867 @@
-// KONFIGURASI AKUN PETUGAS 
-const USERS = {
-  "LAILY NURHASANAH": { pass: "2020", sheet: "LAILY NURHASANAH" },
-  "TRIYO SISWOYO": { pass: "2121", sheet: "TRIYO SISWOYO" },
-  "MUHAMMAD NURRYAN AFGANI": { pass: "2222", sheet: "MUHAMMAD NURRYAN AFGANI" },
-  "AULIA KAFA BIHI ZAKI HARLING": { pass: "2323", sheet: "AULIA KAFA BIHI ZAKI HARLING" },
-  "MUHAMMAD HANIF FAKHRY": { pass: "4444", sheet: "MUHAMMAD HANIF FAKHRY" },
-  "ZAIN NUR FADILAH": { pass: "ADMIN", sheet: "ZAIN NUR FADILAH" }
-};
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Sensus UMKM 2026</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { darkMode: 'class', theme: { extend: {} } }
+  </script>
+  <style>
+    /* MATIKAN SCROLL REFRESH DI HP */
+    html, body { overscroll-behavior-y: none; touch-action: pan-y; }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb { background: #475569; }
+  </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-900 text-slate-800 dark:text-slate-200 font-sans min-h-screen py-8 px-4 relative transition-colors duration-300">
 
-function doGet(e) {
-  try {
-    var sheetName = e.parameter.sheetName;
-    if (!sheetName) throw new Error("Akses ditolak. Sheet tidak valid.");
+  <!-- OVERLAY LOGIN (Persisten) -->
+  <div id="loginOverlay" class="fixed inset-0 bg-slate-900 z-[200] flex items-center justify-center transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-800 p-8 rounded-2xl shadow-2xl max-w-sm w-full mx-4 border border-slate-200 dark:border-slate-700">
+      <div class="text-center mb-6">
+        <h2 class="text-2xl font-bold text-blue-700 dark:text-blue-400">SENSUS UMKM</h2>
+        <p class="text-sm text-slate-500 dark:text-slate-400">Silakan login sebagai Petugas</p>
+      </div>
+      <form id="loginForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-semibold mb-1">Username</label>
+          <input type="text" id="loginUsername" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-sm font-semibold mb-1">Password</label>
+          <input type="password" id="loginPassword" required class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500">
+        </div>
+        <p id="loginError" class="text-red-500 text-sm hidden font-medium text-center"></p>
+        <button type="submit" id="btnLogin" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-bold py-3 rounded-xl transition flex justify-center items-center">
+          Masuk
+        </button>
+      </form>
+    </div>
+  </div>
 
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var sheet = ss.getSheetByName(sheetName);
+  <!-- MODAL PASSWORD BUKA RIWAYAT -->
+  <div id="passwordOverlay" class="fixed inset-0 bg-slate-900/80 z-[150] hidden flex items-center justify-center transition-opacity duration-300">
+    <div class="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-2xl max-w-sm w-full mx-4 border border-slate-200 dark:border-slate-700">
+      <h3 class="text-xl font-bold mb-2">Keamanan Riwayat</h3>
+      <p class="text-sm text-slate-500 dark:text-slate-400 mb-4">Masukkan ulang password Anda untuk melihat data.</p>
+      <input type="password" id="historyPassword" class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 mb-4" placeholder="Password...">
+      <p id="historyError" class="text-red-500 text-sm hidden font-medium text-center mb-3">Password Salah!</p>
+      <div class="flex gap-3">
+        <button type="button" id="btnCancelHistory" class="flex-1 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-2.5 rounded-xl transition">Batal</button>
+        <button type="button" id="btnVerifyHistory" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-2.5 rounded-xl transition">Buka</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR RIWAYAT (Geser Kiri) -->
+  <div id="sidebarHistory" class="fixed inset-y-0 left-0 w-full sm:w-[400px] bg-white dark:bg-slate-800 shadow-2xl z-[140] transform -translate-x-full transition-transform duration-300 flex flex-col border-r border-slate-200 dark:border-slate-700">
+    <div class="p-5 bg-slate-100 dark:bg-slate-700/50 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
+      <h2 class="font-bold text-lg">Riwayat Data</h2>
+      <button type="button" id="btnCloseSidebar" class="p-2 bg-slate-200 dark:bg-slate-600 rounded-full hover:bg-slate-300 dark:hover:bg-slate-500 transition">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
+    </div>
+    <div class="p-4 border-b border-slate-200 dark:border-slate-700">
+      <input type="text" id="inputSearch" placeholder="Cari Nama Usaha..." class="w-full bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 text-sm outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50 dark:bg-slate-800/80 relative">
+      <div id="historyLoading" class="text-center text-slate-500 text-sm mt-10 flex flex-col items-center">
+          <svg class="animate-spin h-8 w-8 text-blue-600 mb-3" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+          Memuat data dari server...
+      </div>
+      <div id="historyEmpty" class="text-center text-slate-500 text-sm hidden mt-10">Belum ada riwayat.</div>
+      <div id="historyList" class="flex flex-col gap-3 hidden"></div>
+    </div>
+    <div class="p-4 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+        <button type="button" id="btnLogout" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl transition flex justify-center items-center gap-2 shadow-sm">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg> Keluar (Logout)
+        </button>
+    </div>
+  </div>
+
+  <!-- KONTEN UTAMA APLIKASI -->
+  <div class="max-w-4xl mx-auto space-y-6 hidden" id="mainApp">
     
-    if (!sheet) return ContentService.createTextOutput(JSON.stringify({ "status": "success", "data": [] })).setMimeType(ContentService.MimeType.JSON);
+    <!-- Toast Notification (Popup Peringatan) -->
+    <div id="toastNotification" class="fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all duration-300 opacity-0 pointer-events-none z-[400] flex items-center gap-2">
+      <span id="toastIcon"></span>
+      <span id="toastMessage">Pesan</span>
+    </div>
 
-    var data = sheet.getDataRange().getValues();
-    var results = [];
-    var keys = ["id", "timestamp", "status_data", "nama_badan_usaha", "alamat_lengkap", "nama_pj", "nik_pj", "email", "no_wa", "tahun_beroperasi", "punya_nib", "no_nib", "foto_nib", "status_badan_usaha", "laporan_keuangan", "produk_utama", "jaringan_usaha", "nama_kantor_pusat", "alamat_kantor_pusat", "email_kantor_pusat", "terlibat_kmp", "terlibat_mbg", "pengeluaran_gaji", "pengeluaran_produksi", "pengeluaran_operasional", "pengeluaran_non_operasional", "pendapatan_barang_jasa", "pendapatan_lainnya", "aset_tanah_bangunan", "aset_non_tanah", "luas_tempat_usaha", "satuan_luas", "catatan"];
+    <!-- MODUL FORMULIR -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-700 overflow-hidden">
+      <div class="bg-gradient-to-r from-blue-700 to-blue-600 dark:from-blue-900 dark:to-blue-800 text-white p-6 text-center relative flex flex-col items-center justify-center min-h-[140px]">
+        
+        <!-- Tombol Riwayat (Kiri) -->
+        <button type="button" id="btnOpenSidebar" class="absolute top-4 left-4 p-2 text-sm font-medium rounded-lg bg-white/20 hover:bg-white/30 transition shadow-sm flex items-center gap-2">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        
+        <!-- Tombol Dark Mode (Kanan) -->
+        <button type="button" id="btnDarkMode" class="absolute top-4 right-4 p-2.5 rounded-full bg-white/20 hover:bg-white/30 transition shadow-sm">
+          <svg id="iconMoon" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path></svg>
+          <svg id="iconSun" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+        </button>
+        
+        <h1 class="text-3xl font-bold tracking-wide mb-1 mt-6 md:mt-2">FORMULIR SENSUS EKONOMI 2026</h1>
+        <p class="text-blue-100 dark:text-blue-200 text-sm">PENDATAAN SENSUS EKONOMI UMKM</p>
+        <p class="mt-3 text-xs bg-black/20 py-1.5 px-4 rounded-full font-medium shadow-inner">Petugas: <span id="labelPetugas" class="font-bold text-amber-300"></span></p>
+      </div>
 
-    for (var i = 1; i < data.length; i++) {
-      var row = data[i];
-      var obj = {};
-      for (var j = 0; j < keys.length; j++) {
-        var val = row[j];
-        if (typeof val === 'string' && val.startsWith("'")) val = val.substring(1);
-        obj[keys[j]] = val;
-      }
-      results.push(obj);
+      <div id="activeDraftNotice" class="hidden bg-emerald-50 dark:bg-emerald-900/30 border-b border-emerald-100 dark:border-emerald-800 p-4 text-emerald-800 dark:text-emerald-400 text-sm text-center">
+        <span class="font-bold">✨ Mode Edit Draft : <span id="activeDraftName" class="font-normal italic"></span></span>
+      </div>
+
+      <!-- Form Utama: onsubmit dicegah agar validasi custom bisa jalan tanpa reload -->
+      <form id="sensusForm" onsubmit="event.preventDefault();" class="p-6 md:p-8 space-y-10">
+        <input type="hidden" name="id" id="sensusId" value="">
+        <input type="hidden" name="status_data" id="statusData" value="Final">
+
+        <!-- BAGIAN 1: IDENTITAS BADAN USAHA -->
+        <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">1. Identitas Badan Usaha</h2>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="md:col-span-2">
+              <label class="block font-semibold text-sm mb-2">Nama Badan Usaha <span class="text-red-500">*</span></label>
+              <input type="text" name="nama_badan_usaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block font-semibold text-sm mb-2">Alamat Lengkap <span class="text-red-500">*</span></label>
+              <textarea name="alamat_lengkap" rows="2" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+            </div>
+            <div>
+              <label class="block font-semibold text-sm mb-2">Nama Penanggung Jawab <span class="text-red-500">*</span></label>
+              <input type="text" name="nama_pj" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div>
+              <label class="block font-semibold text-sm mb-2">NIK Penanggung Jawab <span class="text-red-500">*</span></label>
+              <input type="number" name="nik_pj" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div>
+              <label class="block font-semibold text-sm mb-2">Email <span class="text-red-500">*</span></label>
+              <input type="email" name="email" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div>
+              <label class="block font-semibold text-sm mb-2">No. WhatsApp <span class="text-red-500">*</span></label>
+              <input type="tel" name="no_wa" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div>
+              <label class="block font-semibold text-sm mb-2">Tahun Berapa Beroperasi <span class="text-red-500">*</span></label>
+              <input type="number" name="tahun_beroperasi" min="1900" max="2026" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            
+            <div class="md:col-span-2 border-t border-slate-200 dark:border-slate-700 pt-4 mt-2">
+              <label class="block font-semibold text-sm mb-2">Status Badan Usaha <span class="text-red-500">*</span></label>
+              <select name="status_badan_usaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                <option value="">-- Pilih --</option>
+                <option value="PT">PT</option><option value="PP">PP</option><option value="CV">CV</option>
+                <option value="Yayasan">Yayasan</option><option value="Koperasi">Koperasi</option>
+                <option value="Dana Pensiun">Dana Pensiun</option><option value="Perum / Perumda">Perum / Perumda</option>
+                <option value="BUMDes">BUMDes</option><option value="Firma">Firma</option>
+                <option value="Persekutuan Perdata">Persekutuan Perdata</option><option value="Badan Usaha Lainnya">Badan Usaha Lainnya</option>
+                <option value="Bukan BU">Bukan BU</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-sm mb-2">Apa punya Laporan Keuangan? <span class="text-red-500">*</span></label>
+              <select name="laporan_keuangan" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-sm mb-2">Produk Utama yang Dihasilkan <span class="text-red-500">*</span></label>
+              <input type="text" name="produk_utama" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+            <div class="md:col-span-2">
+              <label class="block font-semibold text-sm mb-2">Jaringan Usaha <span class="text-red-500">*</span></label>
+              <select name="jaringan_usaha" id="jaringanUsaha" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                <option value="">-- Pilih --</option>
+                <option value="Tunggal">Tunggal</option><option value="Kantor Pusat">Kantor Pusat</option>
+                <option value="Cabang">Cabang</option><option value="Perwakilan">Perwakilan</option>
+                <option value="Pabrik">Pabrik</option><option value="Unit Penunjang">Unit Penunjang</option>
+              </select>
+            </div>
+            
+            <div id="fieldKantorPusat" class="hidden md:col-span-2 bg-indigo-50 dark:bg-indigo-900/20 p-5 rounded-xl border border-indigo-100 dark:border-indigo-800 space-y-4 shadow-inner">
+              <p class="font-bold text-indigo-900 dark:text-indigo-300 text-sm">Informasi Kantor Pusat</p>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                  <label class="block font-medium text-xs mb-1">Nama Kantor Pusat <span class="text-red-500">*</span></label>
+                  <input type="text" name="nama_kantor_pusat" id="inputKP_nama" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div>
+                  <label class="block font-medium text-xs mb-1">Alamat Kantor Pusat <span class="text-red-500">*</span></label>
+                  <input type="text" name="alamat_kantor_pusat" id="inputKP_alamat" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+                <div>
+                  <label class="block font-medium text-xs mb-1">Email Kantor Pusat <span class="text-red-500">*</span></label>
+                  <input type="email" name="email_kantor_pusat" id="inputKP_email" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-2.5 outline-none focus:ring-2 focus:ring-blue-500 transition">
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-semibold text-sm mb-2">Apa Terlibat KMP ? <span class="text-red-500">*</span></label>
+              <select name="terlibat_kmp" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-sm mb-2">Apa Terlibat MBG ? <span class="text-red-500">*</span></label>
+              <select name="terlibat_mbg" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+                <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <!-- BAGIAN 2: PENGELUARAN -->
+        <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">2. Rincian Pengeluaran 2025</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div><label class="block text-sm font-semibold mb-2">Gaji / Upah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_gaji" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+            <div><label class="block text-sm font-semibold mb-2">Biaya Produksi <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_produksi" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+            <div><label class="block text-sm font-semibold mb-2">Operasional <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_operasional" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+            <div><label class="block text-sm font-semibold mb-2">Non Operasional <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pengeluaran_non_operasional" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+          </div>
+        </section>
+
+        <!-- BAGIAN 3 & 4: PENDAPATAN & ASET -->
+        <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">3 & 4. Pendapatan & Aset 2025</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div><label class="block text-sm font-semibold mb-2">Pendapatan Barang & Jasa <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_barang_jasa" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+            <div><label class="block text-sm font-semibold mb-2">Pendapatan Lainnya <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="pendapatan_lainnya" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+            <div><label class="block text-sm font-semibold mb-2">Aset Tanah & Bangunan <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="aset_tanah_bangunan" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+            <div><label class="block text-sm font-semibold mb-2">Aset Non-Tanah <span class="text-red-500">*</span></label><input type="text" data-type="currency" required name="aset_non_tanah" placeholder="Rp 0" class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></div>
+            
+            <div class="md:col-span-2">
+              <label class="block text-sm font-semibold mb-2">Luas Tempat Usaha <span class="text-red-500">*</span></label>
+              <div class="flex">
+                <input type="number" required name="luas_tempat_usaha" placeholder="Angka luas..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-l-lg p-3 outline-none border-r-0 focus:ring-2 focus:ring-blue-500 transition">
+                <select name="satuan_luas" required class="bg-gray-100 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-r-lg p-3 outline-none font-bold cursor-pointer w-24">
+                  <option value="m²">m²</option>
+                  <option value="ubin">ubin</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- BAGIAN 5: NOMOR NIB & FOTO (DIPINDAH KE BAWAH) -->
+        <section class="bg-blue-50/50 dark:bg-blue-900/10 p-6 rounded-xl border border-blue-200 dark:border-blue-800 shadow-sm">
+          <h2 class="text-xl font-bold text-blue-900 dark:text-blue-300 border-b-2 border-blue-200 dark:border-blue-700 pb-3 mb-4">5. Perizinan & Dokumentasi NIB</h2>
+          
+          <div class="mb-5">
+            <label class="block font-semibold text-sm mb-2">Punya No. NIB? <span class="text-red-500">*</span></label>
+            <select name="punya_nib" id="punyaNib" required class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition cursor-pointer">
+              <option value="">-- Pilih --</option><option value="Ya">Ya</option><option value="Tidak">Tidak</option>
+            </select>
+          </div>
+
+          <!-- KOLOM MUNCUL JIKA PUNYA NIB -->
+          <div id="fieldNoNib" class="hidden space-y-5">
+            <div>
+              <label class="block font-semibold text-sm mb-2 text-blue-800 dark:text-blue-400">Nomor NIB <span class="text-red-500">*</span></label>
+              <input type="text" name="no_nib" id="inputNoNib" placeholder="Masukkan angka NIB..." class="w-full bg-white dark:bg-slate-900 border border-blue-300 dark:border-blue-700 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition">
+            </div>
+
+            <div id="sectionUploadNIB" class="bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <label class="block font-semibold text-blue-900 dark:text-blue-300 text-sm mb-3">Upload Foto NIB (Wajib) <span class="text-red-500">*</span></label>
+              
+              <!-- Container Foto Lama (Muncul jika edit draft) -->
+              <div id="existingPhotosContainer" class="hidden mb-4 p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg border border-slate-200 dark:border-slate-700">
+                <p class="text-xs font-bold text-slate-500 mb-2">📸 Foto Tersimpan (Dari Draft Sebelumnya):</p>
+                <div id="existingPhotosList" class="flex gap-2 overflow-x-auto pb-2"></div>
+              </div>
+
+              <!-- Tombol Pilih Foto -->
+              <div class="flex flex-col sm:flex-row gap-3 mb-2">
+                <label class="flex-1 text-center bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold py-3.5 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
+                  📸 Buka Kamera
+                  <input type="file" id="inputFotoCamera" accept="image/*" capture="environment" class="hidden">
+                </label>
+                <label class="flex-1 text-center bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold py-3.5 px-3 rounded-xl cursor-pointer transition shadow flex items-center justify-center gap-2">
+                  📁 Pilih dari Galeri
+                  <input type="file" id="inputFotoGallery" accept="image/*" multiple class="hidden">
+                </label>
+              </div>
+              
+              <!-- Tempat Preview Gambar Baru -->
+              <div id="stagedFilesList" class="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4"></div>
+              
+              <p class="text-xs text-blue-800 dark:text-blue-400 mt-3 font-medium">Bisa melampirkan lebih dari satu foto. Pastikan jelas terbaca.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- BAGIAN 6: CATATAN (PALING AKHIR) -->
+        <section class="bg-slate-50/50 dark:bg-slate-800/50 p-6 rounded-xl border border-slate-100 dark:border-slate-700 shadow-sm">
+          <h2 class="text-xl font-bold text-blue-800 dark:text-blue-400 border-b-2 border-blue-200 dark:border-blue-900 pb-3 mb-6">6. Catatan Tambahan</h2>
+          <div>
+            <label class="block text-sm font-semibold mb-2">Catatan / Keterangan (Opsional)</label>
+            <textarea name="catatan" rows="3" placeholder="Tuliskan catatan khusus di sini jika ada..." class="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500 transition"></textarea>
+          </div>
+        </section>
+
+        <!-- TOMBOL SIMPAN / KIRIM -->
+        <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-200 dark:border-slate-700 sticky bottom-4 z-50">
+          <button type="button" id="btnSaveServerDraft" class="flex-1 bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+            💾 Simpan Draft (Abaikan Kolom Kosong)
+          </button>
+          <button type="button" id="btnResetForm" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-sm">
+            Form Baru
+          </button>
+          <button type="button" id="btnSubmitFinal" class="flex-1 bg-blue-700 hover:bg-blue-800 text-white font-bold py-4 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg">
+            🚀 Kirim Data Final (Wajib Lengkap)
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // MASUKKAN URL APLIKASI WEB GOOGLE APPS SCRIPT ANDA DI SINI
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_B0QCdhhjrSc7NStCdCS1tgwKzh1zVb6GZpCCscNPZGl3Jnf883qK712JhMWxObTE/exec'; 
+
+    const form = document.getElementById('sensusForm');
+    const loginOverlay = document.getElementById('loginOverlay');
+    const mainApp = document.getElementById('mainApp');
+    const sidebarHistory = document.getElementById('sidebarHistory');
+    const passwordOverlay = document.getElementById('passwordOverlay');
+    
+    let allDataCache = []; 
+    let currentSheetName = "";
+    let stagedFilesArray = []; // Array menampung file base64
+
+    // CEK LOGIN STATE PERSISTEN
+    if(localStorage.getItem('petugas_sheet')) {
+       loginOverlay.classList.add('hidden');
+       mainApp.classList.remove('hidden');
+       currentSheetName = localStorage.getItem('petugas_sheet');
+       document.getElementById('labelPetugas').innerText = localStorage.getItem('petugas_user');
     }
-    
-    return ContentService.createTextOutput(JSON.stringify({ "status": "success", "data": results })).setMimeType(ContentService.MimeType.JSON);
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": err.message })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
 
-function doPost(e) {
-  try {
-    var req = JSON.parse(e.postData.contents);
-    
-    // --- 1. PROSES LOGIN ---
-    if (req.action === "login") {
-      if (USERS[req.username] && USERS[req.username].pass === req.password) {
-        return ContentService.createTextOutput(JSON.stringify({ 
-          "status": "success", 
-          "sheetName": USERS[req.username].sheet 
-        })).setMimeType(ContentService.MimeType.JSON);
-      } else {
-        return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": "Username atau Password salah!" })).setMimeType(ContentService.MimeType.JSON);
-      }
-    }
-
-    // --- 2. PROSES HAPUS DRAFT ---
-    if (req.action === "delete") {
-      var ss = SpreadsheetApp.getActiveSpreadsheet();
-      var sheet = ss.getSheetByName(req.sheetName);
-      if (!sheet) throw new Error("Sheet tidak ditemukan.");
+    // FUNGSI LOGIN
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('btnLogin');
+      const err = document.getElementById('loginError');
+      const user = document.getElementById('loginUsername').value;
+      const pass = document.getElementById('loginPassword').value;
       
-      var sheetData = sheet.getDataRange().getValues();
-      for (var i = 1; i < sheetData.length; i++) {
-        if (sheetData[i][0] == req.id) { 
-          if (sheetData[i][2] === "Final") {
-            throw new Error("Data ini sudah Final dan tidak boleh dihapus.");
+      err.classList.add('hidden');
+      btn.innerHTML = "Memeriksa..."; btn.disabled = true;
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'login', username: user, password: pass })
+        });
+        const res = await response.json();
+        
+        if(res.status === 'success') {
+          localStorage.setItem('petugas_sheet', res.sheetName);
+          localStorage.setItem('petugas_user', user);
+          localStorage.setItem('petugas_pass', pass); 
+          
+          currentSheetName = res.sheetName;
+          document.getElementById('labelPetugas').innerText = user;
+          
+          loginOverlay.classList.add('opacity-0');
+          setTimeout(() => {
+            loginOverlay.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+          }, 300);
+        } else {
+          err.innerText = res.message;
+          err.classList.remove('hidden');
+        }
+      } catch (error) {
+        err.innerText = "Gagal terhubung ke server.";
+        err.classList.remove('hidden');
+      } finally {
+        btn.innerHTML = "Masuk"; btn.disabled = false;
+      }
+    });
+
+    // LOGOUT
+    document.getElementById('btnLogout').addEventListener('click', () => {
+      localStorage.clear();
+      window.location.reload();
+    });
+
+    // SIDEBAR & PASSWORD LOGIC
+    document.getElementById('btnOpenSidebar').addEventListener('click', () => {
+      passwordOverlay.classList.remove('hidden');
+      document.getElementById('historyPassword').value = '';
+      document.getElementById('historyError').classList.add('hidden');
+    });
+    document.getElementById('btnCancelHistory').addEventListener('click', () => {
+      passwordOverlay.classList.add('hidden');
+    });
+    document.getElementById('btnCloseSidebar').addEventListener('click', () => {
+      sidebarHistory.classList.add('-translate-x-full');
+    });
+
+    document.getElementById('btnVerifyHistory').addEventListener('click', () => {
+      const inputPass = document.getElementById('historyPassword').value;
+      const storedPass = localStorage.getItem('petugas_pass');
+      
+      if(inputPass === storedPass) {
+        passwordOverlay.classList.add('hidden');
+        sidebarHistory.classList.remove('-translate-x-full');
+        loadHistory(); 
+      } else {
+        document.getElementById('historyError').classList.remove('hidden');
+      }
+    });
+
+    // DARK MODE GABUNGAN
+    const btnDarkMode = document.getElementById('btnDarkMode');
+    const htmlTag = document.documentElement;
+    const iconSun = document.getElementById('iconSun');
+    const iconMoon = document.getElementById('iconMoon');
+
+    if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      htmlTag.classList.add('dark'); iconSun.classList.remove('hidden'); iconMoon.classList.add('hidden');
+    } else {
+      iconSun.classList.add('hidden'); iconMoon.classList.remove('hidden');
+    }
+    
+    btnDarkMode.addEventListener('click', () => {
+      htmlTag.classList.toggle('dark');
+      if (htmlTag.classList.contains('dark')) {
+        localStorage.theme = 'dark'; iconSun.classList.remove('hidden'); iconMoon.classList.add('hidden');
+      } else {
+        localStorage.theme = 'light'; iconSun.classList.add('hidden'); iconMoon.classList.remove('hidden');
+      }
+    });
+
+    // FORMAT RUPIAH
+    const currencyInputs = document.querySelectorAll('input[data-type="currency"]');
+    function formatRupiah(angka) {
+      let number_string = angka.replace(/[^,\d]/g, '').toString();
+      let split = number_string.split(',');
+      let sisa = split[0].length % 3;
+      let rupiah = split[0].substr(0, sisa);
+      let ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+      if (ribuan) {
+        let separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+      }
+      return rupiah ? 'Rp ' + rupiah : '';
+    }
+    currencyInputs.forEach(input => {
+      input.addEventListener('keyup', function() { this.value = formatRupiah(this.value); });
+    });
+
+    // TOGGLE WAJIB ISI NIB & KANTOR PUSAT
+    document.getElementById('punyaNib').addEventListener('change', (e) => {
+      const fieldNIBAtas = document.getElementById('fieldNoNib');
+      if (e.target.value === 'Ya') { 
+        fieldNIBAtas.classList.remove('hidden'); 
+      } else { 
+        fieldNIBAtas.classList.add('hidden'); 
+      }
+    });
+
+    document.getElementById('jaringanUsaha').addEventListener('change', (e) => {
+      const field = document.getElementById('fieldKantorPusat');
+      if (['Cabang', 'Perwakilan', 'Pabrik', 'Unit Penunjang'].includes(e.target.value)) {
+        field.classList.remove('hidden');
+      } else { 
+        field.classList.add('hidden'); 
+      }
+    });
+
+    // FUNGSI EKSTRAK THUMBNAIL GOOGLE DRIVE
+    function getDriveThumbnail(url) {
+      const match = url.match(/[-\w]{25,}/); // Ambil File ID
+      if (match) return `https://drive.google.com/thumbnail?id=${match[0]}&sz=w200`;
+      return '';
+    }
+
+    // FILE INPUT HANDLER (Kamera & Galeri) DENGAN PREVIEW
+    async function compressImageAndGetBase64(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+          const img = new Image();
+          img.src = e.target.result;
+          img.onload = () => {
+            const canvas = document.createElement('canvas');
+            const MAX_WIDTH = 800; // Kecilkan ke 800px agar cepat upload
+            const scaleSize = MAX_WIDTH / img.width;
+            canvas.width = MAX_WIDTH; canvas.height = img.height * scaleSize;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            
+            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7); 
+            const base64 = compressedDataUrl.replace(/^data:image\/(png|jpeg|jpg);base64,/, '');
+            
+            resolve({ name: file.name, mimeType: 'image/jpeg', base64: base64 });
+          };
+        };
+        reader.onerror = error => reject(error);
+      });
+    }
+
+    async function handleFileInput(e) {
+      const files = e.target.files;
+      if (!files.length) return;
+      
+      showToast('Memproses & memuat foto...', 'success');
+      for(let i = 0; i < files.length; i++) {
+         const base64Data = await compressImageAndGetBase64(files[i]);
+         stagedFilesArray.push({ id: Date.now() + i, ...base64Data });
+      }
+      renderStagedFiles();
+      e.target.value = ''; // Reset input agar bisa pilih file yang sama lagi
+    }
+    
+    document.getElementById('inputFotoCamera').addEventListener('change', handleFileInput);
+    document.getElementById('inputFotoGallery').addEventListener('change', handleFileInput);
+
+    // FUNGSI RENDER VISUAL PREVIEW GAMBAR BARU
+    function renderStagedFiles() {
+       const list = document.getElementById('stagedFilesList');
+       list.innerHTML = '';
+       stagedFilesArray.forEach(file => {
+          list.innerHTML += `
+            <div class="relative rounded-xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 shadow-sm bg-white dark:bg-slate-800 group">
+              <img src="data:${file.mimeType};base64,${file.base64}" class="w-full h-32 md:h-40 object-cover">
+              
+              <!-- Hover Overlay (Desktop) -->
+              <div class="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <button type="button" onclick="removeStagedFile(${file.id})" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg">Ganti / Hapus</button>
+              </div>
+
+              <!-- Tombol Silang Permanen (Bantu Mobile) -->
+              <button type="button" onclick="removeStagedFile(${file.id})" class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-md z-10 md:hidden">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+          `;
+       });
+    }
+
+    window.removeStagedFile = function(id) {
+       stagedFilesArray = stagedFilesArray.filter(f => f.id !== id);
+       renderStagedFiles();
+    }
+
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = message;
+      document.getElementById('toastIcon').innerHTML = type === 'success' 
+         ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>'
+         : '<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>';
+      
+      toast.className = `fixed top-5 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-xl shadow-2xl text-white font-bold transition-all duration-300 z-[400] flex items-center gap-2 ${type === 'success' ? 'bg-emerald-600' : 'bg-red-600'}`;
+      
+      setTimeout(() => { toast.classList.add('opacity-0', '-translate-y-5', 'pointer-events-none'); }, 4000);
+    }
+
+    function setButtonLoading(btn, isLoading, text) {
+      if(isLoading) {
+        btn.disabled = true; btn.dataset.original = btn.innerHTML;
+        btn.innerHTML = `<svg class="animate-spin h-5 w-5 mr-2 text-white inline" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg> Memproses...`;
+      } else {
+        btn.disabled = false; btn.innerHTML = btn.dataset.original || text;
+      }
+    }
+
+    // FUNGSI RIWAYAT & PREVIEW FOTO
+    async function loadHistory() {
+      if(!currentSheetName) return;
+      const loading = document.getElementById('historyLoading');
+      const list = document.getElementById('historyList');
+      const empty = document.getElementById('historyEmpty');
+      
+      list.classList.add('hidden'); empty.classList.add('hidden'); loading.classList.remove('hidden');
+
+      try {
+        const response = await fetch(`${SCRIPT_URL}?sheetName=${currentSheetName}`);
+        const result = await response.json();
+        
+        loading.classList.add('hidden');
+        if(result.status === 'success') {
+          allDataCache = result.data || [];
+          renderHistory(allDataCache);
+        }
+      } catch (error) {
+        loading.innerHTML = '<span class="text-red-500">Gagal memuat riwayat.</span>';
+      }
+    }
+
+    function renderHistory(dataArray) {
+      const list = document.getElementById('historyList');
+      const empty = document.getElementById('historyEmpty');
+      list.innerHTML = '';
+
+      if (dataArray.length === 0) {
+        empty.classList.remove('hidden'); list.classList.add('hidden'); return;
+      }
+      empty.classList.add('hidden'); list.classList.remove('hidden');
+
+      const displayData = [...dataArray].reverse();
+      displayData.forEach(item => {
+        const isDraft = item.status_data === 'Draft';
+        const isFinal = item.status_data === 'Final';
+        const badgeClass = isDraft ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300' : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/50 dark:text-emerald-300';
+        
+        // RENDER PREVIEW FOTO (Thumbnail)
+        let photosHtml = '';
+        if (item.foto_nib && item.foto_nib !== '-') {
+            const urls = item.foto_nib.split(' , \n');
+            photosHtml = '<div class="flex gap-2 mt-3 overflow-x-auto pb-1">';
+            urls.forEach(url => {
+                const thumb = getDriveThumbnail(url);
+                if (thumb) photosHtml += `<img src="${thumb}" class="w-14 h-14 object-cover rounded-md border border-slate-300 dark:border-slate-600 shadow-sm" alt="Foto">`;
+            });
+            photosHtml += '</div>';
+        }
+
+        const card = document.createElement('div');
+        card.className = `p-4 rounded-xl border shadow-sm flex flex-col justify-between ${isFinal ? 'bg-slate-100 dark:bg-slate-900 border-slate-300 dark:border-slate-800' : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`;
+        card.innerHTML = `
+          <div>
+            <div class="flex justify-between items-start mb-2">
+              <h3 class="font-bold line-clamp-1">${item.nama_badan_usaha || 'Tanpa Nama'}</h3>
+              <span class="text-xs px-2 py-0.5 rounded-full border font-semibold ${badgeClass}">${item.status_data}</span>
+            </div>
+            <p class="text-xs text-slate-500 mb-1">PJ: ${item.nama_pj || '-'}</p>
+          </div>
+          ${photosHtml}
+          ${isFinal 
+            ? `<button disabled class="mt-4 w-full bg-slate-200 dark:bg-slate-800 text-slate-400 cursor-not-allowed text-sm font-bold py-2 rounded-lg border border-slate-300 dark:border-slate-700">Terkunci (Final)</button>` 
+            : `<div class="mt-4 flex gap-2">
+                 <button type="button" onclick="loadToForm('${item.id}')" class="flex-1 bg-blue-50 dark:bg-blue-900/30 hover:bg-blue-100 dark:hover:bg-blue-900/50 text-blue-700 dark:text-blue-300 text-sm font-bold py-2 rounded-lg transition border border-blue-200 dark:border-blue-800">Edit Draft</button>
+                 <button type="button" onclick="deleteDraft('${item.id}')" class="px-4 bg-red-50 dark:bg-red-900/30 hover:bg-red-100 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 text-sm font-bold py-2 rounded-lg transition border border-red-200 dark:border-red-800 shadow-sm">Hapus</button>
+               </div>`
           }
-          sheet.deleteRow(i + 1); // i+1 karena index array mulai dari 0, row sheet mulai dari 1
-          return ContentService.createTextOutput(JSON.stringify({ 
-            "status": "success", 
-            "message": "Draft berhasil dihapus permanen dari Database." 
-          })).setMimeType(ContentService.MimeType.JSON);
-        }
-      }
-      throw new Error("Data draft tidak ditemukan.");
+        `;
+        list.appendChild(card);
+      });
     }
 
-    // --- 3. PROSES SIMPAN DATA (DRAFT / FINAL) ---
-    if (req.action === "save") {
-      var ss = SpreadsheetApp.getActiveSpreadsheet();
-      var sheet = ss.getSheetByName(req.sheetName);
-      
-      if (!sheet) {
-        sheet = ss.insertSheet(req.sheetName);
-        sheet.appendRow([
-          "ID Sensus", "Waktu Input", "Status Data", "Nama Badan Usaha", "Alamat Lengkap", "Nama Penanggung Jawab", "NIK PJ", "Email", "No. WhatsApp", "Tahun Beroperasi", "Punya NIB", "Nomor NIB", "Link Foto NIB", "Status Badan Usaha", "Laporan Keuangan", "Produk Utama", "Jaringan Usaha", "Nama Kantor Pusat", "Alamat Kantor Pusat", "Email Kantor Pusat", "Terlibat KMP", "Terlibat MBG", "Pengeluaran: Gaji", "Pengeluaran: Produksi", "Pengeluaran: Operasional", "Pengeluaran: Non Ops", "Pendapatan: Barang & Jasa", "Pendapatan: Lainnya", "Aset: Tanah & Bangunan", "Aset: Non Tanah", "Luas Tempat Usaha", "Satuan Luas", "Catatan"
-        ]);
-        sheet.getRange(1, 1, 1, 33).setFontWeight("bold").setBackground("#1e40af").setFontColor("#ffffff");
-      }
+    document.getElementById('inputSearch').addEventListener('input', function(e) {
+      const keyword = e.target.value.toLowerCase();
+      const filtered = allDataCache.filter(item => (item.nama_badan_usaha && item.nama_badan_usaha.toLowerCase().includes(keyword)));
+      renderHistory(filtered);
+    });
 
-      var data = req.data;
-      var id_sensus = data.id || "UMKM-" + new Date().getTime();
-      var status_data = data.status_data || "Final"; 
+    // FUNGSI HAPUS DRAFT
+    window.deleteDraft = async function(id) {
+       if(!confirm('Apakah Anda yakin ingin menghapus draft ini secara PERMANEN dari Server?')) return;
+       
+       showToast('Sedang menghapus draft...', 'success');
+       try {
+          const response = await fetch(SCRIPT_URL, {
+             method: 'POST',
+             body: JSON.stringify({ action: 'delete', sheetName: currentSheetName, id: id })
+          });
+          const result = await response.json();
+          
+          if(result.status === 'success') {
+             showToast('Draft berhasil dihapus!', 'success');
+             // Jika form saat ini sedang membuka draft tersebut, reset formnya
+             if(document.getElementById('sensusId').value === id) {
+                 document.getElementById('btnResetForm').click();
+             }
+             loadHistory(); // Refresh riwayat
+          } else {
+             showToast(result.message, 'error');
+          }
+       } catch (e) {
+          showToast('Gagal terhubung untuk menghapus.', 'error');
+       }
+    }
 
-      var sheetData = sheet.getDataRange().getValues();
-      var rowIndex = -1;
-      var isDataFinalInServer = false;
-      
-      for (var i = 1; i < sheetData.length; i++) {
-        if (sheetData[i][0] == id_sensus) { 
-          rowIndex = i + 1; 
-          if (sheetData[i][2] === "Final") isDataFinalInServer = true;
-          break;
+    // FUNGSI LOAD DRAFT KE FORM
+    window.loadToForm = function(id) {
+      const data = allDataCache.find(item => item.id === id);
+      if (!data) return;
+
+      Object.keys(data).forEach(key => {
+        const field = form.elements[key];
+        if (field && key !== 'foto_nib') {
+          if(field.dataset.type === 'currency') field.value = data[key] ? formatRupiah(data[key].toString()) : '';
+          else field.value = data[key];
         }
-      }
+      });
 
-      if (isDataFinalInServer) {
-         throw new Error("Data ini sudah berstatus Final dan terkunci.");
-      }
-
-      var fotoUrlsStr = data.foto_urls_existing || "-"; 
-      if (req.files && req.files.length > 0) {
-        var folderName = "Foto NIB Sensus UMKM";
-        var folders = DriveApp.getFoldersByName(folderName);
-        var folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(folderName);
-        
-        var urlArr = (fotoUrlsStr !== "-") ? fotoUrlsStr.split(' , \n') : []; 
-        
-        for (var f = 0; f < req.files.length; f++) {
-          var fileObj = req.files[f];
-          var blob = Utilities.newBlob(Utilities.base64Decode(fileObj.base64), fileObj.mimeType, id_sensus + "_" + fileObj.name);
-          var driveFile = folder.createFile(blob);
-          driveFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-          urlArr.push(driveFile.getUrl());
-        }
-        fotoUrlsStr = urlArr.join(" , \n"); 
-      }
-
-      var rowData = [
-        id_sensus, new Date(), status_data, data.nama_badan_usaha || "-", data.alamat_lengkap || "-", data.nama_pj || "-", "'" + (data.nik_pj || "-"), data.email || "-", "'" + (data.no_wa || "-"), data.tahun_beroperasi || "-", data.punya_nib || "-", data.no_nib || "-", fotoUrlsStr, data.status_badan_usaha || "-", data.laporan_keuangan || "-", data.produk_utama || "-", data.jaringan_usaha || "-", data.nama_kantor_pusat || "-", data.alamat_kantor_pusat || "-", data.email_kantor_pusat || "-", data.terlibat_kmp || "-", data.terlibat_mbg || "-", data.pengeluaran_gaji || 0, data.pengeluaran_produksi || 0, data.pengeluaran_operasional || 0, data.pengeluaran_non_operasional || 0, data.pendapatan_barang_jasa || 0, data.pendapatan_lainnya || 0, data.aset_tanah_bangunan || 0, data.aset_non_tanah || 0, data.luas_tempat_usaha || 0, data.satuan_luas || "-", data.catatan || "-"
-      ];
-
-      if (rowIndex > -1) {
-        sheet.getRange(rowIndex, 1, 1, rowData.length).setValues([rowData]);
+      document.getElementById('sensusId').value = data.id;
+      
+      // Kosongkan file upload baru
+      stagedFilesArray = []; renderStagedFiles(); 
+      
+      // Tampilkan foto tersimpan jika ada
+      const existingContainer = document.getElementById('existingPhotosContainer');
+      const existingList = document.getElementById('existingPhotosList');
+      existingList.innerHTML = '';
+      
+      if (data.foto_nib && data.foto_nib !== '-') {
+          existingContainer.classList.remove('hidden');
+          const urls = data.foto_nib.split(' , \n');
+          urls.forEach(url => {
+              const thumb = getDriveThumbnail(url);
+              if (thumb) {
+                  existingList.innerHTML += `
+                    <div class="relative min-w-[100px]">
+                      <img src="${thumb}" class="w-24 h-24 object-cover rounded-lg border border-slate-300">
+                    </div>`;
+              }
+          });
       } else {
-        sheet.appendRow(rowData);
+          existingContainer.classList.add('hidden');
       }
 
-      return ContentService.createTextOutput(JSON.stringify({ 
-        "status": "success", 
-        "message": status_data === "Draft" ? "Draft berhasil disimpan (Bisa dilanjutkan nanti)!" : "Data Final berhasil dikirim & Terkunci!",
-        "id": id_sensus
-      })).setMimeType(ContentService.MimeType.JSON);
+      // Pancing trigger untuk memunculkan kolom yang tersembunyi
+      document.getElementById('punyaNib').dispatchEvent(new Event('change'));
+      document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
+
+      document.getElementById('activeDraftNotice').classList.remove('hidden');
+      document.getElementById('activeDraftName').innerText = data.nama_badan_usaha;
+      
+      sidebarHistory.classList.add('-translate-x-full'); // Tutup sidebar
+      showToast('Draft siap dilanjutkan.', 'success');
+      form.scrollIntoView({ behavior: 'smooth' });
+    };
+
+    document.getElementById('btnResetForm').addEventListener('click', () => {
+      form.reset();
+      document.getElementById('sensusId').value = '';
+      document.getElementById('activeDraftNotice').classList.add('hidden');
+      document.getElementById('existingPhotosContainer').classList.add('hidden');
+      stagedFilesArray = []; renderStagedFiles();
+      document.getElementById('punyaNib').dispatchEvent(new Event('change'));
+      document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
+      showToast('Formulir dibersihkan.', 'success');
+    });
+
+    // FUNGSI CUSTOM VALIDASI (Mencegah tombol mati / macet)
+    function validateFormCustom() {
+        const elements = form.elements;
+        for (let i = 0; i < elements.length; i++) {
+            const el = elements[i];
+            // Cek apakah wajib diisi dan SEDANG MUNCUL di layar (tidak hidden)
+            if (el.hasAttribute('required') && el.offsetParent !== null) {
+                if (!el.value.trim()) {
+                    el.focus();
+                    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    let labelName = "Kolom ini";
+                    if (el.previousElementSibling && el.previousElementSibling.tagName === 'LABEL') {
+                        labelName = el.previousElementSibling.innerText.replace('*', '').trim();
+                    } else if (el.closest('div').querySelector('label')) {
+                        labelName = el.closest('div').querySelector('label').innerText.replace('*', '').trim();
+                    }
+                    showToast(`Harap isi: ${labelName}`, 'error');
+                    return false; // Validasi Gagal, BERHENTI!
+                }
+            }
+        }
+        return true; // Validasi Sukses
     }
 
-  } catch (err) {
-    return ContentService.createTextOutput(JSON.stringify({ "status": "error", "message": err.message })).setMimeType(ContentService.MimeType.JSON);
-  }
-}
+    // POST DATA (DRAFT vs FINAL)
+    async function postData(statusType, btnElement) {
+      
+      // JIKA FINAL, LAKUKAN VALIDASI KETAT.
+      if (statusType === 'Final') {
+        
+        // 1. Validasi Custom (Scroll & Toast ke kolom kosong)
+        if (!validateFormCustom()) return;
+        
+        // 2. Validasi Ekstra untuk NIB & Foto
+        if (document.getElementById('punyaNib').value === 'Ya') {
+            const inputNoNib = document.getElementById('inputNoNib');
+            if(!inputNoNib.value) {
+                inputNoNib.focus(); inputNoNib.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                showToast('Nomor NIB wajib diisi!', 'error'); return;
+            }
+            // Cek apakah tidak ada file baru DAN tidak ada file lama (dari draft)
+            const hasExistingPhotos = !document.getElementById('existingPhotosContainer').classList.contains('hidden');
+            if(stagedFilesArray.length === 0 && !hasExistingPhotos) {
+                document.getElementById('sectionUploadNIB').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                showToast('Foto NIB wajib dilampirkan!', 'error'); 
+                return;
+            }
+        }
+      }
+
+      setButtonLoading(btnElement, true, statusType === 'Final' ? '🚀 Kirim Data Final' : '💾 Simpan Draft');
+      document.getElementById('statusData').value = statusType;
+
+      const formData = new FormData(form);
+      const data = Object.fromEntries(formData.entries());
+
+      // Bersihkan format Rp dari string sebelum masuk Google Sheet
+      currencyInputs.forEach(input => {
+        const name = input.name;
+        if(data[name]) data[name] = data[name].replace(/[^0-9]/g, ''); 
+      });
+
+      // Sisipkan URL foto lama jika sedang mengedit draft yang sebelumnya sudah di-upload fotonya
+      const idSensus = document.getElementById('sensusId').value;
+      if (idSensus) {
+        const existingData = allDataCache.find(item => item.id === idSensus);
+        if(existingData && existingData.foto_nib) {
+            data.foto_urls_existing = existingData.foto_nib;
+        }
+      }
+
+      const payload = {
+        action: 'save',
+        sheetName: currentSheetName,
+        data: data,
+        files: stagedFilesArray
+      };
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          body: JSON.stringify(payload) 
+        });
+        const result = await response.json();
+
+        if (result.status === 'success') {
+          showToast(result.message, 'success');
+          if(statusType === 'Final') {
+             document.getElementById('btnResetForm').click();
+          } else {
+             // Jika simpan draft, perbarui ID di form biar klo disave lagi numpuk (edit), ga bikin baris baru
+             document.getElementById('sensusId').value = result.id;
+             stagedFilesArray = []; renderStagedFiles(); 
+             
+             // Karena fotonya sekarang sudah masuk DB (Tersimpan), kita panggil ulang dari riwayat
+             // Tapi lebih cepat jika pancing loadHistory untuk sync dengan server
+          }
+          loadHistory(); // Refresh riwayat agar data terbaru muncul
+        } else { 
+          showToast(result.message, 'error'); 
+        }
+      } catch (error) { 
+        console.error(error);
+        showToast('Koneksi terputus. Pastikan internet stabil.', 'error'); 
+      } finally { 
+        setButtonLoading(btnElement, false); 
+      }
+    }
+
+    // LISTENER TOMBOL MANUAL VALIDASI
+    document.getElementById('btnSaveServerDraft').addEventListener('click', function() { postData('Draft', this); });
+    document.getElementById('btnSubmitFinal').addEventListener('click', function() { postData('Final', this); });
+
+  </script>
+</body>
+</html>
