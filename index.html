@@ -51,22 +51,22 @@
     
     <div class="relative z-10 bg-slate-900/60 backdrop-blur-2xl p-6 rounded-3xl shadow-2xl w-full max-w-sm border border-slate-700/50">
       <div class="text-center mb-6">
-        <h2 class="text-xl font-black text-blue-400 tracking-tight drop-shadow-md">MASUK PETUGAS</h2>
-        <p class="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-wider">Sensus UMKM Kebumen 2026</p>
+        <h2 class="text-xl font-black text-blue-400 tracking-tight drop-shadow-md">UMK & UMKM KARANGANYAR</h2>
+        <p class="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-wider">Sensus Ekonomi 2026 Kebumen</p>
       </div>
       <form id="loginForm" class="space-y-4">
         <div>
-          <label class="text-slate-300">Pilih Desa Tugas</label>
+          <label class="text-slate-300">Pilih Desa</label>
           <input type="text" readonly class="custom-select-trigger cursor-pointer text-center font-bold text-white bg-slate-800/80 border-slate-700 hover:bg-slate-700" placeholder="Pilih Desa..." data-options="Binangun|Karangsari|Jingklak|Sibacin|Jatiluhur|Candisari" data-target="login_desa">
           <input type="hidden" id="loginDesaValue" name="login_desa" required>
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="text-slate-300">RT (2 Digit)</label>
-            <input type="number" id="loginRT" inputmode="numeric" placeholder="01" required class="text-center font-bold tracking-widest bg-slate-800/80 border-slate-700">
+            <label class="text-slate-300">RT</label>
+            <input type="number" id="loginRT" inputmode="numeric" placeholder="001" required class="text-center font-bold tracking-widest bg-slate-800/80 border-slate-700">
           </div>
           <div>
-            <label class="text-slate-300">RW (2 Digit)</label>
+            <label class="text-slate-300">RW</label>
             <input type="number" id="loginRW" inputmode="numeric" placeholder="01" required class="text-center font-bold tracking-widest bg-slate-800/80 border-slate-700">
           </div>
         </div>
@@ -160,16 +160,16 @@
           <!-- LANGKAH 1: IDENTITAS BU -->
           <div class="form-step space-y-3" data-step="1">
             <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2.5 tracking-wide">Identitas Badan Usaha</h2>
-            <div><label>Nama Badan Usaha <span class="text-red-400">*</span></label><input type="text" name="nama_badan_usaha" required placeholder="Contoh: Toko Berkah"></div>
+            <div><label>Nama Usaha <span class="text-red-400">*</span></label><input type="text" name="nama_badan_usaha" required placeholder="Contoh: Toko Berkah"></div>
             <div><label>Alamat Lengkap <span class="text-red-400">*</span></label><textarea name="alamat_lengkap" rows="2" required placeholder="Nama Jalan, Patokan..."></textarea></div>
-            <div><label>Nama Penanggung Jawab <span class="text-red-400">*</span></label><input type="text" name="nama_pj" required placeholder="Nama Sesuai KTP"></div>
-            <div><label>NIK Penanggung Jawab <span class="text-red-400">*</span></label><input type="number" inputmode="numeric" name="nik_pj" required placeholder="16 Digit Angka NIK"></div>
+            <div><label>Nama Pemilik atau Penanggung Jawab <span class="text-red-400">*</span></label><input type="text" name="nama_pj" required placeholder="Nama Sesuai KTP"></div>
+            <div><label>NIK Pemilik atau Penanggung Jawab <span class="text-red-400">*</span></label><input type="number" inputmode="numeric" name="nik_pj" required placeholder="16 Digit Angka NIK"></div>
             <div><label>No. WhatsApp <span class="text-red-400">*</span></label><input type="number" inputmode="numeric" name="no_wa" required placeholder="Contoh: 081234..."></div>
             <div><label>Email Usaha <span class="text-red-400">*</span></label><input type="email" name="email" required placeholder="email@contoh.com"></div>
-            <div><label>Tahun Mulai Beroperasi <span class="text-red-400">*</span></label><input type="number" inputmode="numeric" name="tahun_beroperasi" required placeholder="Contoh: 2018"></div>
+            <div><label>Tahun Mulai Usaha <span class="text-red-400">*</span></label><input type="number" inputmode="numeric" name="tahun_beroperasi" required placeholder="Contoh: 2018"></div>
             <div class="pt-1">
               <label>Status Badan Usaha <span class="text-red-400">*</span></label>
-              <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih Status..." data-options="PT|PP|CV|Yayasan|Koperasi|Dana Pensiun|Perum / Perumda|BUMDes|Firma|Persekutuan Perdata|Badan Usaha Lainnya|Bukan BU" data-target="status_badan_usaha">
+              <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih Status..." data-options="PT|PP|CV|Yayasan|Koperasi|Dana Pensiun|Perum / Perumda|BUMDes|Firma|Persekutuan Perdata|Badan Usaha Lainnya|Bukan Badan Usaha" data-target="status_badan_usaha">
               <input type="hidden" name="status_badan_usaha" required>
             </div>
             <div>
@@ -181,7 +181,7 @@
 
           <!-- LANGKAH 2: JARINGAN & PRODUK -->
           <div class="form-step space-y-3 hidden" data-step="2">
-            <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2.5 tracking-wide">Jaringan & Produk</h2>
+            <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2.5 tracking-wide">Jenis Usaha & Produk Usaha</h2>
             <div><label>Produk Utama Dihasilkan <span class="text-red-400">*</span></label><input type="text" name="produk_utama" required placeholder="Contoh: Kripik Pisang"></div>
             <div>
               <label>Jaringan Usaha <span class="text-red-400">*</span></label>
@@ -208,29 +208,29 @@
 
           <!-- LANGKAH 3: PENGELUARAN -->
           <div class="form-step space-y-3 hidden" data-step="3">
-            <h2 class="text-sm font-black text-white mb-3 border-l-4 border-blue-500 pl-2.5 tracking-wide">Pengeluaran 2025</h2>
+            <h2 class="text-sm font-black text-white mb-3 border-l-4 border-blue-500 pl-2.5 tracking-wide">Pengeluaran selama tahun 2025</h2>
             <div class="bg-blue-900/20 text-blue-300 p-2.5 rounded-xl border border-blue-800/30 text-[9px] font-medium mb-4 leading-relaxed">
-               Kosongkan jika tidak ada/nol. Awalan 'Rp' dan titik ribuan akan terisi otomatis.
+               Kosongkan jika tidak ada pengeluaran dari kolom dibawah atau ketik "0".
             </div>
             <div><label>Gaji / Upah</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_gaji" placeholder="Rp 0"></div>
             <div><label>Biaya Produksi</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_produksi" placeholder="Rp 0"></div>
-            <div><label>Operasional</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_operasional" placeholder="Rp 0"></div>
-            <div><label>Non Operasional</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_non_operasional" placeholder="Rp 0"></div>
+            <div><label>Biaya Operasional (Transport, Listrik, Air, Dll.)</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_operasional" placeholder="Rp 0"></div>
+            <div><label>Biaya Non-Operasional (Pajak, Rusak, Hilang, Perbaikan)</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_non_operasional" placeholder="Rp 0"></div>
           </div>
 
           <!-- LANGKAH 4: PENDAPATAN & ASET -->
           <div class="form-step space-y-3 hidden" data-step="4">
-            <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2.5 tracking-wide">Pendapatan & Aset</h2>
+            <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2.5 tracking-wide">Pendapatan & Aset selama tahun 2025</h2>
             <div><label>Pendapatan Barang & Jasa</label><input type="text" inputmode="numeric" data-type="currency" name="pendapatan_barang_jasa" placeholder="Rp 0"></div>
-            <div><label>Pendapatan Lainnya</label><input type="text" inputmode="numeric" data-type="currency" name="pendapatan_lainnya" placeholder="Rp 0"></div>
+            <div><label>Pendapatan Lainnya selain dari usaha</label><input type="text" inputmode="numeric" data-type="currency" name="pendapatan_lainnya" placeholder="Rp 0"></div>
             <hr class="border-slate-800/50 my-4">
-            <div><label>Nilai Aset Tanah & Bangunan</label><input type="text" inputmode="numeric" data-type="currency" name="aset_tanah_bangunan" placeholder="Rp 0"></div>
-            <div><label>Nilai Aset Non-Tanah</label><input type="text" inputmode="numeric" data-type="currency" name="aset_non_tanah" placeholder="Rp 0"></div>
+            <div><label>Harga Tanah & Bangunan (Milik Pribadi)</label><input type="text" inputmode="numeric" data-type="currency" name="aset_tanah_bangunan" placeholder="Rp 0"></div>
+            <div><label>Harga Non-Tanah & Bangunan (Barang atau Alat ditempat Usaha)</label><input type="text" inputmode="numeric" data-type="currency" name="aset_non_tanah" placeholder="Rp 0"></div>
             
             <div class="pt-3 border-t border-slate-800/50">
-              <label>Luas Tempat Usaha <span class="text-red-400">*</span></label>
+              <label>Luas Tempat yang digunakan Usaha <span class="text-red-400">*</span></label>
               <div class="flex gap-2 items-center">
-                <input type="number" inputmode="numeric" name="luas_tempat_usaha" required placeholder="Isi Angka..." class="flex-1">
+                <input type="number" inputmode="numeric" name="luas_tempat_usaha" required placeholder="59" class="flex-1">
                 <div class="w-[35%] relative">
                   <!-- Laci Satuan Luas -->
                   <input type="text" readonly class="custom-select-trigger cursor-pointer text-center text-blue-300 font-bold bg-slate-800/80" value="m²" data-options="m²|ubin" data-target="satuan_luas">
@@ -242,15 +242,15 @@
 
           <!-- LANGKAH 5: PERIZINAN NIB -->
           <div class="form-step space-y-3 hidden" data-step="5">
-            <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2.5 tracking-wide">Perizinan NIB</h2>
+            <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2.5 tracking-wide">Perizinan Lain-nya atau NIB</h2>
             <div>
               <label>Punya Nomor NIB? <span class="text-red-400">*</span></label>
               <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih..." data-options="Ya|Tidak" data-target="punya_nib">
               <input type="hidden" name="punya_nib" id="punyaNib" required>
             </div>
             <div id="fieldNoNib" class="hidden bg-slate-800/40 p-3.5 rounded-xl border border-slate-700/50 mt-3">
-              <label>Nomor NIB <span class="text-red-400">*</span></label>
-              <input type="number" inputmode="numeric" name="no_nib" id="inputNoNib" placeholder="Ketik Digit Angka NIB">
+              <label>Nomor Perizinan Lain-nya atau NIB <span class="text-red-400">*</span></label>
+              <input type="number" inputmode="numeric" name="no_nib" id="inputNoNib" placeholder="Ketik Angka Perizinan Lain-nya atau NIB">
             </div>
           </div>
 
@@ -260,12 +260,12 @@
             
             <!-- UPLOAD FOTO NIB -->
             <div id="areaFotoNib" class="space-y-3 bg-slate-800/40 p-3.5 rounded-xl border border-slate-700/50 hidden">
-               <label class="block text-white font-bold text-xs">Upload Foto Dokumen NIB</label>
-               <p class="text-[9px] text-slate-400 mb-2 leading-relaxed">Kualitas gambar akan dipertahankan penuh (tidak dikompres).</p>
+               <label class="block text-white font-bold text-xs">Upload Gambar Dokumen Perizinan atau NIB</label>
+               <p class="text-[9px] text-slate-400 mb-2 leading-relaxed">Unggah dokumen seluruh perizinan yang dimiliki.</p>
                
                <!-- Preview Foto yg Sudah Ada (Bisa dihapus responden) -->
                <div id="existingPhotosContainer" class="hidden mb-2 p-2 bg-slate-900 rounded-xl border border-slate-700">
-                  <p class="text-[8px] font-bold text-emerald-400 mb-2 uppercase tracking-wider">Foto NIB Tersimpan:</p>
+                  <p class="text-[8px] font-bold text-emerald-400 mb-2 uppercase tracking-wider">Dokumen NIB Tersimpan:</p>
                   <div id="existingPhotosList" class="flex gap-2 overflow-x-auto pb-1 snap-x"></div>
                </div>
 
@@ -293,10 +293,10 @@
             <!-- TOMBOL AKSI: SIMPAN DRAFT / KIRIM FINAL -->
             <div class="flex flex-col gap-2.5 mt-5 pt-4 border-t border-slate-800/50">
                <button type="button" id="btnSaveDraft" class="w-full bg-slate-800/80 text-slate-300 font-bold py-3 rounded-xl border border-slate-700 text-[11px] hover:bg-slate-700 transition-all shadow-sm">
-                 Simpan Sebagai Draft (Tanpa Validasi)
+                 Simpan Draft Data
                </button>
                <button type="button" id="btnSubmitFinal" class="w-full bg-emerald-600 text-white font-black py-3 rounded-xl text-xs shadow-lg shadow-emerald-900/50 hover:bg-emerald-500 transition-all tracking-wide border border-emerald-500/50">
-                 Kirim Data Final Sensus
+                 Kirim Data
                </button>
             </div>
           </div>
@@ -667,7 +667,7 @@
     function handleFileInput(e) {
       const files = e.target.files;
       if (!files.length) return;
-      showToast('Memproses foto resolusi asli...', 'success');
+      showToast('Memuat foto resolusi', 'success');
       for(let i = 0; i < files.length; i++) {
         const file = files[i];
         const reader = new FileReader();
