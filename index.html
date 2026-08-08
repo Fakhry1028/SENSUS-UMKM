@@ -1081,7 +1081,10 @@
        .finally(() => { btn.innerText = "Verifikasi"; btn.disabled = false; });
     });
 
-    document.getElementById('btnCloseSidebar').addEventListener('click', forceCloseModals);
+    document.getElementById('btnCloseSidebar').addEventListener('click', () => {
+        document.getElementById('sidebarHistory').classList.add('-translate-x-full');
+        if(history.state && history.state.sidebar === 'open') history.back();
+    });
 
     function renderServerHistory(data) {
        const list = document.getElementById('serverHistoryList');
