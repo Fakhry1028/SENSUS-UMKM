@@ -905,8 +905,19 @@
     // LIHAT FINAL LOKAL (Read-Only di HP)
     window.lihatFinalLokal = function(id) {
        let historyArr = JSON.parse(localStorage.getItem('recent_submissions') || '[]');
-       const dataObj = historyArr.find(h => h.id === id);
-       if(!dataObj || !dataObj.payload) return;
+       // Samakan tipe data pencarian agar pasti ketemu
+       const dataObj = historyArr.find(h => String(h.id) === String(id));
+       
+       if(!dataObj || !dataObj.payload) {
+           showToast("Data rincian tidak ditemukan di perangkat ini.", "error");
+           return;
+       }
+       
+       // INI ADALAH PERINTAH PEMBUKA LAYAR YANG SEBELUMNYA HILANG
+       history.pushState({modal: 'detail'}, '');
+       document.getElementById('detailModal').classList.remove('hidden');
+       setTimeout(() => document.getElementById('detailModal').classList.add('flex'), 10);
+       
        tampilkanDetailKeModal(dataObj.payload, dataObj.urls);
     }
 
