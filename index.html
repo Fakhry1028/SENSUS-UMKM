@@ -87,11 +87,11 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- HEADER ATAS (DIPAKU MATI / FIXED) -->
+  <!-- HEADER ATAS (DIPAKU MATI / FIXED / EFEK KACA BLUR TINGGI) -->
   <!-- ========================================== -->
-  <div class="fixed top-0 left-0 right-0 z-[100] bg-slate-950/95 backdrop-blur-md border-b border-slate-800 flex justify-between items-center p-4">
+  <div class="fixed top-0 left-0 right-0 z-[100] bg-slate-900/50 backdrop-blur-xl border-b border-slate-800/50 flex justify-between items-center p-4">
     <!-- TOMBOL GARIS 3 (SIDEBAR RIWAYAT) -->
-    <button id="btnOpenSidebar" class="bg-slate-800 p-2.5 rounded-xl text-blue-400 font-bold active:scale-90 transition-transform border border-slate-700">
+    <button id="btnOpenSidebar" class="bg-slate-800/80 p-2.5 rounded-xl text-blue-400 font-bold active:scale-90 transition-transform border border-slate-700/50 backdrop-blur-md">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
     </button>
     
@@ -113,21 +113,20 @@
   <!-- pt-[76px] agar konten scroll tidak tertutup header yang fixed -->
   <div class="app-wrapper hidden pt-[76px]" id="mainApp">
     
+    <!-- BACKGROUND PENDATAAN (FIXED, UKURAN ASLI, TIDAK IKUT SCROLL) -->
+    <div class="fixed top-0 left-0 right-0 bottom-0 z-0 pointer-events-none flex justify-center items-start bg-slate-950">
+       <img src="BPS.png" alt="Background Pendataan" class="w-full max-w-2xl object-contain opacity-35 mix-blend-screen">
+       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/90 to-slate-950"></div>
+    </div>
+
     <!-- AREA SCROLL KONTEN -->
     <main class="scroll-container relative z-10 flex flex-col h-full" id="scrollArea">
       
-      <!-- BANNER (GANTI BPS.png DENGAN FOTO ASLI ANDA) - IKUT SCROLL -->
-      <div class="w-full h-[160px] flex-none relative bg-slate-900 border-b border-slate-800">
-         <!-- Gunakan object-cover atau object-contain sesuai selera, ini tidak akan menutupi form -->
-         <img src="BPS.png" alt="Header Banner" class="w-full h-full object-cover mix-blend-screen opacity-50">
-         <div class="absolute inset-0 bg-gradient-to-b from-transparent to-slate-950"></div>
-      </div>
-
       <!-- KONTEN FORMULIR UTAMA -->
-      <div class="flex-1 max-w-2xl mx-auto px-4 sm:px-6 w-full -mt-10 relative z-20 pb-6">
+      <div class="flex-1 max-w-2xl mx-auto px-4 sm:px-6 w-full mt-4 relative z-20 pb-6">
         
         <!-- PROGRESS BAR LANGKAH -->
-        <div class="flex justify-between items-center mb-6 px-2 bg-slate-900 p-4 rounded-2xl border border-slate-800 shadow-lg">
+        <div class="flex justify-between items-center mb-6 px-2 bg-slate-900/90 backdrop-blur-md p-4 rounded-2xl border border-slate-800 shadow-lg">
           <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Tahap <span id="stepIndicator" class="text-blue-400 text-lg font-black mx-1">1</span>/6</span>
           <div class="flex-1 ml-5 h-2 bg-slate-800 rounded-full overflow-hidden">
             <div id="progressBar" class="h-full bg-blue-500 rounded-full transition-all duration-500 w-1/6 shadow-[0_0_10px_rgba(59,130,246,0.6)]"></div>
@@ -299,30 +298,34 @@
 
         <!-- RIWAYAT LOKAL SESI INI -->
         <div class="mt-8 mb-4">
-          <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 text-center">Riwayat Input Perangkat Ini</h3>
+          <h3 class="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4 text-center drop-shadow-md">Riwayat Input Perangkat Ini</h3>
           <div id="recentHistoryList" class="space-y-3">
-            <p class="text-center text-xs text-slate-600 font-medium" id="emptyRecent">Belum ada pendataan terbaru.</p>
+            <p class="text-center text-xs text-slate-500 font-medium bg-slate-900/80 backdrop-blur-md p-3 rounded-xl border border-slate-800" id="emptyRecent">Belum ada pendataan terbaru.</p>
           </div>
         </div>
       </div>
 
       <!-- ========================================== -->
-      <!-- FOOTER TEKS BERJALAN & BLUR (TIDAK HALANGI KEYBOARD) -->
+      <!-- FOOTER LOGO KIRI KANAN & TEKS BERJALAN -->
       <!-- ========================================== -->
       <!-- mt-auto memastikan footer terdorong ke paling dasar layar scroll -->
-      <footer class="mt-auto flex-none bg-slate-950 border-t border-slate-800 py-4 relative z-20 overflow-hidden text-center">
-        <p class="font-black tracking-widest text-[11px] text-slate-400">BPS KAB. KEBUMEN</p>
+      <footer class="mt-auto flex-none bg-slate-950 border-t border-slate-800 p-3 relative z-20 flex justify-between items-center gap-3">
+        <!-- LOGO KIRI -->
+        <img src="logo_kiri.png" alt="Logo Kiri" class="w-8 h-8 object-contain shrink-0">
         
         <!-- Marquee dengan blur ujung kiri & kanan -->
-        <div class="relative max-w-[280px] mx-auto mt-2 h-4 overflow-hidden flex items-center">
+        <div class="flex-1 relative overflow-hidden flex items-center h-4">
            <div class="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-slate-950 to-transparent z-10"></div>
            <div class="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-slate-950 to-transparent z-10"></div>
            
            <!-- Teks Berjalan -->
-           <div class="animate-marquee whitespace-nowrap text-[10px] text-slate-500 font-medium tracking-wide">
+           <div class="animate-marquee whitespace-nowrap text-[10px] text-slate-400 font-medium tracking-wide">
               Jl. Arungbinang No.19, Kebumen, Jawa Tengah 54311 • Melayani dengan Profesional, Integritas, dan Amanah • Sensus UMKM 2026
            </div>
         </div>
+
+        <!-- LOGO KANAN -->
+        <img src="logo_kanan.png" alt="Logo Kanan" class="w-8 h-8 object-contain shrink-0">
       </footer>
     </main>
   </div>
