@@ -12,14 +12,14 @@
     
     /* INPUT CSS RAMPING (TIDAK BABON) */
     input[type="text"], input[type="number"], input[type="email"], input[type="tel"], textarea, .custom-select-trigger {
-        width: 100%; padding: 0.75rem 1rem; font-size: 0.9rem; border-radius: 0.75rem;
+        width: 100%; padding: 0.6rem 0.8rem; font-size: 0.8rem; border-radius: 0.5rem;
         background-color: #1e293b; border: 1px solid #334155;
         color: #f8fafc; outline: none; transition: border-color 0.2s;
         box-sizing: border-box; 
     }
-    input::placeholder, textarea::placeholder { color: #64748b; font-size: 0.85rem; }
+    input::placeholder, textarea::placeholder { color: #64748b; font-size: 0.75rem; }
     input:focus, textarea:focus, .custom-select-trigger:focus { border-color: #3b82f6; }
-    label { display: block; margin-bottom: 0.4rem; font-size: 0.8rem; font-weight: 600; color: #94a3b8; }
+    label { display: block; margin-bottom: 0.3rem; font-size: 0.75rem; font-weight: 600; color: #94a3b8; }
     
     /* LACI (DRAWER) HALUS */
     .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 1000; }
@@ -43,10 +43,10 @@
   <!-- ========================================== -->
   <div id="loginOverlay" class="fixed inset-0 bg-slate-950 z-[999] flex flex-col justify-center items-center p-4 relative">
     
-    <!-- GANTI 'gambar_login_anda.png' DENGAN GAMBAR BACKGROUND LOGIN ASLI ANDA (RASIO CONTAIN) -->
-    <img src="gambar_login_anda.png" alt="Background Login" class="absolute inset-0 w-full h-full object-contain opacity-30 pointer-events-none mix-blend-screen">
+    <!-- GANTI 'gambar_login_anda.png' DENGAN GAMBAR BACKGROUND LOGIN ASLI ANDA (FULL LAYAR) -->
+    <img src="BG SE2026.png" alt="Background Login" class="absolute inset-0 w-full h-full object-cover opacity-40 pointer-events-none mix-blend-screen">
     
-    <div class="relative z-10 bg-slate-900/90 backdrop-blur-xl p-8 rounded-3xl shadow-2xl w-full max-w-sm border border-slate-700">
+    <div class="relative z-10 bg-slate-900/80 backdrop-blur-xl p-6 rounded-3xl shadow-2xl w-full max-w-sm border border-slate-700">
       <div class="text-center mb-8">
         <h2 class="text-2xl font-black text-blue-500 tracking-tight">MASUK PETUGAS</h2>
         <p class="text-xs text-slate-400 font-medium mt-1">Sensus UMKM Kebumen 2026</p>
@@ -57,17 +57,7 @@
           <input type="text" readonly class="custom-select-trigger cursor-pointer text-center font-bold text-white bg-slate-800" placeholder="Pilih Desa..." data-options="Binangun|Karangsari|Jingklak|Sibacin|Jatiluhur|Candisari" data-target="login_desa">
           <input type="hidden" id="loginDesaValue" name="login_desa" required>
         </div>
-        <div class="flex gap-4">
-          <div class="flex-1">
-            <label class="text-slate-300">RT</label>
-            <input type="number" inputmode="numeric" id="loginRT" required placeholder="01" class="font-bold text-center bg-slate-800 border-slate-700 text-white rounded-xl">
-          </div>
-          <div class="flex-1">
-            <label class="text-slate-300">RW</label>
-            <input type="number" inputmode="numeric" id="loginRW" required placeholder="03" class="font-bold text-center bg-slate-800 border-slate-700 text-white rounded-xl">
-          </div>
-        </div>
-        <button type="submit" id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl mt-4 shadow-lg hover:bg-blue-700 active:scale-95 transition-transform text-sm">Mulai Pendataan</button>
+        <button type="submit" id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-2.5 rounded-xl mt-4 shadow-lg hover:bg-blue-700 active:scale-95 transition-transform text-sm">Mulai Pendataan</button>
       </form>
     </div>
   </div>
@@ -89,9 +79,9 @@
   <!-- ========================================== -->
   <!-- HEADER ATAS (DIPAKU MATI / FIXED / EFEK KACA BLUR TINGGI) -->
   <!-- ========================================== -->
-  <div class="fixed top-0 left-0 right-0 z-[100] bg-slate-900/50 backdrop-blur-xl border-b border-slate-800/50 flex justify-between items-center p-4">
+  <div class="fixed top-0 left-0 right-0 z-[100] bg-slate-900/20 backdrop-blur-md border-b border-slate-800/30 flex justify-between items-center p-3">
     <!-- TOMBOL GARIS 3 (SIDEBAR RIWAYAT) -->
-    <button id="btnOpenSidebar" class="bg-slate-800/80 p-2.5 rounded-xl text-blue-400 font-bold active:scale-90 transition-transform border border-slate-700/50 backdrop-blur-md">
+    <button id="btnOpenSidebar" class="bg-slate-800/60 p-2.5 rounded-xl text-blue-400 font-bold active:scale-90 transition-transform border border-slate-700/50 backdrop-blur-md">
       <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
     </button>
     
@@ -110,13 +100,12 @@
   <!-- ========================================== -->
   <!-- WRAPPER UTAMA -->
   <!-- ========================================== -->
-  <!-- pt-[76px] agar konten scroll tidak tertutup header yang fixed -->
-  <div class="app-wrapper hidden pt-[76px]" id="mainApp">
+  <!-- pt-[64px] agar konten scroll tidak tertutup header yang fixed -->
+  <div class="app-wrapper hidden pt-[64px]" id="mainApp">
     
     <!-- BACKGROUND PENDATAAN (FIXED, UKURAN ASLI, TIDAK IKUT SCROLL) -->
-    <div class="fixed top-0 left-0 right-0 bottom-0 z-0 pointer-events-none flex justify-center items-start bg-slate-950">
-       <img src="BPS.png" alt="Background Pendataan" class="w-full max-w-2xl object-contain opacity-35 mix-blend-screen">
-       <div class="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/90 to-slate-950"></div>
+    <div class="fixed top-0 left-0 right-0 bottom-0 z-0 pointer-events-none flex justify-center items-center bg-slate-950">
+       <img src="BPS.png" alt="Background Pendataan" class="absolute inset-0 w-full h-full object-contain opacity-35 mix-blend-screen">
     </div>
 
     <!-- AREA SCROLL KONTEN -->
@@ -279,10 +268,10 @@
             
             <!-- TOMBOL SIMPAN & KIRIM DI BAWAH CATATAN -->
             <div class="flex flex-col gap-3 mt-6 pt-5 border-t border-slate-800">
-               <button type="button" id="btnSaveDraft" class="w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl border border-slate-700 text-sm active:scale-95">
+               <button type="button" id="btnSaveDraft" class="w-full bg-slate-800 text-white font-bold py-2.5 rounded-xl border border-slate-700 text-sm active:scale-95">
                  Simpan Sebagai Draft (Tanpa Validasi)
                </button>
-               <button type="button" id="btnSubmitFinal" class="w-full bg-emerald-600 text-white font-black py-3.5 rounded-xl text-sm active:scale-95 shadow-lg shadow-emerald-900/50">
+               <button type="button" id="btnSubmitFinal" class="w-full bg-emerald-600 text-white font-black py-2.5 rounded-xl text-sm active:scale-95 shadow-lg shadow-emerald-900/50">
                  Kirim Data Final
                </button>
             </div>
@@ -290,8 +279,8 @@
 
           <!-- NAVIGASI BAWAH UNTUK NEXT/PREV (Langkah 1-5) -->
           <div class="flex gap-3 mt-6" id="navButtonsContainer">
-            <button type="button" id="btnPrev" class="hidden w-1/3 bg-slate-800 text-slate-300 border border-slate-700 font-bold py-3.5 rounded-xl active:scale-95 text-sm">Kembali</button>
-            <button type="button" id="btnNext" class="flex-1 bg-blue-600 text-white font-bold py-3.5 rounded-xl active:scale-95 text-sm shadow-md">Selanjutnya</button>
+            <button type="button" id="btnPrev" class="hidden w-1/3 bg-slate-800 text-slate-300 border border-slate-700 font-bold py-2.5 rounded-xl active:scale-95 text-sm">Kembali</button>
+            <button type="button" id="btnNext" class="flex-1 bg-blue-600 text-white font-bold py-2.5 rounded-xl active:scale-95 text-sm shadow-md">Selanjutnya</button>
           </div>
 
         </form>
@@ -311,7 +300,7 @@
       <!-- mt-auto memastikan footer terdorong ke paling dasar layar scroll -->
       <footer class="mt-auto flex-none bg-slate-950 border-t border-slate-800 p-3 relative z-20 flex justify-between items-center gap-3">
         <!-- LOGO KIRI -->
-        <img src="logo_kiri.png" alt="Logo Kiri" class="w-8 h-8 object-contain shrink-0">
+        <img src="lEFT.png" alt="Logo Kiri" class="w-8 h-8 object-contain shrink-0">
         
         <!-- Marquee dengan blur ujung kiri & kanan -->
         <div class="flex-1 relative overflow-hidden flex items-center h-4">
@@ -320,12 +309,12 @@
            
            <!-- Teks Berjalan -->
            <div class="animate-marquee whitespace-nowrap text-[10px] text-slate-400 font-medium tracking-wide">
-              Jl. Arungbinang No.19, Kebumen, Jawa Tengah 54311 • Melayani dengan Profesional, Integritas, dan Amanah • Sensus UMKM 2026
+              BPS KABUPATEN KEBUMEN • Jl. Arungbinang No.19, Kebumen, Jawa Tengah 54311 • Melayani dengan Profesional, Integritas, dan Amanah • Sensus Ekonomi 2026
            </div>
         </div>
 
         <!-- LOGO KANAN -->
-        <img src="logo_kanan.png" alt="Logo Kanan" class="w-8 h-8 object-contain shrink-0">
+        <img src="RIGHT.png" alt="Logo Kanan" class="w-8 h-8 object-contain shrink-0">
       </footer>
     </main>
   </div>
@@ -385,7 +374,7 @@
   <!-- ========================================== -->
   <script>
     // MASUKAN URL APP SCRIPT TERBARU ANDA DI SINI
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyGYW_6pJ20xWoQXb_4bqRrwtvNX5hBd2R23pP9SOqxvAWv8V7R5RIadYwcE0N0HXCw/exec'; 
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzDnS9jVUbn6K-yDokWw_Qxf2JNKChZzsXq-Y0ZCpcH9vRLNU16Bvoi8zY6xPoXjof_/exec'; 
 
     let currentStep = 1;
     const totalSteps = 6;
