@@ -1,381 +1,432 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Sensus UMKM 2026</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: { extend: { colors: { slate: { 850: '#151f32', 900: '#0f172a', 950: '#020617' } } } }
+    }
+  </script>
   <style>
     /* CSS GLOBAL: Gelap, Elegan, Anti-Bounce & Responsif Proporsional */
-    html, body { overscroll-behavior-y: none; touch-action: pan-y; background-color: #0f172a; color: #f8fafc; font-family: 'Inter', system-ui, sans-serif; -webkit-tap-highlight-color: transparent; }
+    html, body { 
+        background-color: #0f172a; color: #f8fafc; font-family: 'Inter', system-ui, sans-serif; 
+        -webkit-tap-highlight-color: transparent; overscroll-behavior: none; 
+    }
     ::-webkit-scrollbar { display: none; }
     
-    /* STYLE INPUT & TEKS (Dirampingkan agar proporsional) */
-    input[type="text"], input[type="number"], input[type="email"], input[type="tel"], textarea, .custom-select-trigger {
-        width: 100%; padding: 0.7rem 1rem; font-size: 0.8rem; border-radius: 0.75rem;
-        background-color: #1e293b; border: 1px solid #334155;
-        color: #f8fafc; outline: none; transition: all 0.2s ease-in-out;
-        box-sizing: border-box; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
+    /* STYLE INPUT & TEKS */
+    input, select, textarea { 
+        background-color: #1e293b !important; color: #f8fafc !important; 
+        border-color: #334155 !important; font-size: 0.9rem !important; padding: 0.6rem 0.8rem !important;
     }
-    input::placeholder, textarea::placeholder { color: #64748b; font-size: 0.75rem; }
-    input:focus, textarea:focus, .custom-select-trigger:focus { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); }
-    label { display: block; margin-bottom: 0.3rem; font-size: 0.7rem; font-weight: 600; color: #94a3b8; letter-spacing: 0.025em; }
+    input::placeholder, textarea::placeholder { color: #64748b !important; }
+    input:focus, textarea:focus { border-color: #3b82f6 !important; ring: 1px #3b82f6 !important; }
+    label { font-size: 0.8rem !important; color: #cbd5e1 !important; margin-bottom: 0.3rem !important; display: block; font-weight: 500;}
     
-    /* ANIMASI LACI (BOTTOM SHEET DRAWER) */
-    .drawer-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 5000; }
+    /* TOAST ANIMATION */
+    @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    .toast-anim { animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+    
+    /* LACI ANIMASI (BOTTOM SHEET) */
+    .drawer-overlay {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
+        opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 9990;
+    }
     .drawer-overlay.active { opacity: 1; pointer-events: auto; }
-    .drawer-content { position: fixed; bottom: 0; left: 0; right: 0; background: #0f172a; border-radius: 24px 24px 0 0; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 5010; max-height: 85vh; display: flex; flex-direction: column; border-top: 1px solid #334155; box-shadow: 0 -10px 40px rgba(0,0,0,0.8); }
+    .drawer-content {
+        position: fixed; bottom: 0; left: 0; right: 0; background: #1e293b; 
+        border-top-left-radius: 24px; border-top-right-radius: 24px;
+        transform: translateY(100%); transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 9991; padding: 1.5rem; max-height: 80vh; overflow-y: auto; border-top: 1px solid #334155;
+    }
     .drawer-content.active { transform: translateY(0); }
+    .drawer-option {
+        padding: 1rem; border-bottom: 1px solid #334155; font-size: 1rem; color: #f8fafc;
+        transition: background 0.2s; cursor: pointer; text-align: center; font-weight: 500;
+    }
+    .drawer-option:active { background: #334155; }
+    .drawer-option:last-child { border-bottom: none; }
+    .step-content { display: none; }
+    .step-content.active { display: block; animation: fadeIn 0.4s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     
-    /* MARQUEE FOOTER */
-    @keyframes marquee { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-    .animate-marquee { display: inline-block; animation: marquee 15s linear infinite; padding-left: 100%; }
-    
-    /* LAYOUT FULL SCREEN FLEXBOX */
-    .app-wrapper { display: flex; flex-direction: column; height: 100dvh; overflow: hidden; position: relative; z-index: 10; }
-    .scroll-container { flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; padding-top: 60px; }
+    /* SPINNER LOADING */
+    .loader { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid #fff; width: 20px; height: 20px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; margin-right: 8px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
-<body class="antialiased selection:bg-blue-500/30">
+<body class="relative flex flex-col h-[100dvh] overflow-hidden text-sm">
 
-  <!-- ========================================== -->
-  <!-- 1. OVERLAY LOGIN (Struktur Profesional Anti-Tertutup) -->
-  <!-- ========================================== -->
-  <div id="loginOverlay" class="fixed inset-0 bg-slate-950 z-[9999] flex flex-col justify-center items-center">
-    <!-- BACKGROUND LOGIN (Gambar Anda disini) -->
-    <img src="gambar_login_anda.png" onerror="this.src='https://placehold.co/1080x1920/0f172a/1e293b?text=Background+Login'" alt="Background Login" class="absolute inset-0 w-full h-full object-cover opacity-50 z-0">
+  <!-- LAYAR LOGIN -->
+  <div id="loginOverlay" class="fixed inset-0 bg-slate-950 z-[1000] flex flex-col justify-center items-center">
+    <!-- Gambar Background Login (Ganti linknya dengan PNG Anda) -->
+    <img src="gambar_login_anda.png" onerror="this.src='https://placehold.co/1080x1920/0f172a/1e293b?text=Background+Login'" alt="Background Login" class="absolute inset-0 w-full h-full object-cover opacity-40 z-0 pointer-events-none">
     
-    <div class="relative z-10 bg-slate-900/80 backdrop-blur-2xl p-7 rounded-3xl shadow-2xl w-[90%] max-w-sm border border-slate-700/50 mt-10">
+    <div class="relative z-10 bg-slate-900/60 backdrop-blur-xl p-7 rounded-3xl shadow-2xl w-[90%] max-w-sm border border-slate-700/50 mt-10">
       <div class="text-center mb-6">
-        <h2 class="text-2xl font-black text-blue-400 tracking-tight drop-shadow-md">MASUK PETUGAS</h2>
-        <p class="text-[10px] text-slate-400 font-medium mt-1 uppercase tracking-wider">Sensus UMKM Kebumen 2026</p>
+        <h2 class="text-2xl font-bold text-white tracking-wide">SENSUS UMKM</h2>
+        <p class="text-blue-400 text-xs mt-1">Sistem Pendataan Terpadu 2026</p>
       </div>
-      <form id="loginForm" class="space-y-4">
+      <div class="space-y-4">
         <div>
           <label class="text-slate-300">Pilih Desa Tugas</label>
-          <input type="text" readonly class="custom-select-trigger cursor-pointer text-center font-bold text-white bg-slate-800 border-slate-600 hover:bg-slate-700" placeholder="Pilih Desa..." data-options="Binangun|Karangsari|Jingklak|Sibacin|Jatiluhur|Candisari" data-target="login_desa">
-          <input type="hidden" id="loginDesaValue" name="login_desa" required>
+          <div class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 text-white flex justify-between items-center" onclick="openDrawer('desaDrawer', 'login_desa')">
+            <span id="login_desa_label">-- Pilih Desa --</span>
+            <span class="text-slate-400">▼</span>
+          </div>
+          <input type="hidden" id="login_desa">
         </div>
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="text-slate-300 text-center">RT (2 Digit)</label>
-            <input type="number" id="loginRT" inputmode="numeric" placeholder="01" required class="text-center font-bold tracking-widest bg-slate-800 border-slate-600">
+            <label class="text-slate-300">RT</label>
+            <input type="number" id="login_rt" placeholder="001" class="w-full rounded-xl text-center" inputmode="numeric">
           </div>
           <div>
-            <label class="text-slate-300 text-center">RW (2 Digit)</label>
-            <input type="number" id="loginRW" inputmode="numeric" placeholder="01" required class="text-center font-bold tracking-widest bg-slate-800 border-slate-600">
+            <label class="text-slate-300">RW</label>
+            <input type="number" id="login_rw" placeholder="002" class="w-full rounded-xl text-center" inputmode="numeric">
           </div>
         </div>
-        <button type="submit" id="btnLogin" class="w-full bg-blue-600 text-white font-bold py-3.5 rounded-xl mt-6 shadow-lg shadow-blue-900/50 hover:bg-blue-500 active:scale-95 transition-all text-xs tracking-wide uppercase">Mulai Pendataan</button>
-      </form>
-      <!-- Tombol Publik Direktori UMKM -->
-      <button type="button" id="btnOpenPublic" class="w-full bg-slate-800 text-slate-300 font-bold py-3.5 rounded-xl mt-3 shadow border border-slate-700 hover:bg-slate-700 active:scale-95 transition-all text-xs tracking-wide uppercase flex justify-center items-center gap-2">
-         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-         Direktori UMKM / UMK
-      </button>
-    </div>
-  </div>
-
-  <!-- ========================================== -->
-  <!-- 2. POP-UP PUBLIK (DIREKTORI UMKM) -->
-  <!-- ========================================== -->
-  <div id="publicModal" class="fixed inset-0 bg-slate-950 z-[9995] hidden flex-col transition-transform transform translate-y-full duration-300">
-     <div class="p-4 bg-slate-900 flex justify-between items-center border-b border-slate-800 flex-none shadow-md z-10 relative">
-       <h3 class="font-black text-sm text-blue-400 uppercase tracking-widest">Direktori UMKM 2026</h3>
-       <button id="btnClosePublic" class="p-2 bg-slate-800 rounded-xl text-slate-300 active:scale-90 transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-     </div>
-     <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-950" id="publicListContent">
-        <div class="flex justify-center items-center h-full text-slate-500 text-xs flex-col gap-3" id="publicLoading">
-           <svg class="animate-spin h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-           Memuat Direktori...
-        </div>
-     </div>
-  </div>
-
-  <!-- POP-UP KONFIRMASI CUSTOM -->
-  <div id="confirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[10000] hidden flex justify-center items-center p-4 transition-opacity">
-    <div class="bg-slate-900 border border-slate-700 p-6 rounded-3xl w-full max-w-xs shadow-2xl scale-95 transition-transform" id="confirmBox">
-      <h3 class="font-black text-white text-lg mb-2 text-center" id="confirmTitle">Konfirmasi</h3>
-      <p class="text-xs text-slate-400 mb-6 text-center leading-relaxed" id="confirmMessage">Pesan.</p>
-      <div class="flex gap-3">
-        <button id="btnConfirmNo" class="flex-1 bg-slate-800 border border-slate-700 text-slate-300 font-bold py-3 rounded-xl active:scale-95 transition-transform text-xs">Batal</button>
-        <button id="btnConfirmYes" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-lg active:scale-95 transition-transform text-xs">Ya, Lanjutkan</button>
+        <button id="btnLogin" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-3.5 rounded-xl mt-4 shadow-lg shadow-blue-900/50 transition">
+          MASUK PENDATAAN
+        </button>
+        <button id="btnOpenPublic" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3.5 rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+          <span>🌐 Direktori UMKM Publik</span>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Toast Notifikasi -->
-  <div id="toast" class="fixed top-20 left-1/2 transform -translate-x-1/2 px-6 py-3.5 rounded-full shadow-2xl text-white font-bold transition-all duration-300 opacity-0 pointer-events-none z-[10000] text-[10px] whitespace-nowrap text-center max-w-[90%] truncate border border-white/10 backdrop-blur-md">Pesan</div>
+  <!-- MODAL DIREKTORI PUBLIK -->
+  <div id="publicModal" class="fixed inset-0 bg-slate-950 z-[1100] hidden flex-col transition-transform duration-300 translate-y-full">
+    <div class="bg-slate-900/80 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center shadow-md">
+      <h3 class="font-bold text-lg text-white">UMKM / UMK Terdaftar</h3>
+      <button id="btnClosePublic" class="text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800">Tutup ✕</button>
+    </div>
+    <div class="p-4 bg-slate-800 flex-none">
+      <input type="text" id="searchPublic" placeholder="Cari nama usaha atau desa..." class="w-full rounded-xl mb-1">
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 space-y-4" id="publicListContainer">
+       <div class="text-center text-slate-400 mt-10" id="publicLoading">Memuat data UMKM...</div>
+    </div>
+  </div>
 
-  <!-- ========================================== -->
-  <!-- 3. APLIKASI UTAMA (FORM) -->
-  <!-- ========================================== -->
-  <div class="app-wrapper hidden" id="mainApp">
+  <!-- MAIN APP CONTAINER -->
+  <div class="app-wrapper hidden w-full h-full flex flex-col relative" id="mainApp">
     
-    <!-- BACKGROUND UTAMA (TIDAK TERPOTONG & FIXED) -->
-    <img src="BPS.png" onerror="this.src='https://placehold.co/1080x1920/0f172a/1e293b?text=Background+App'" alt="Background Sensus" class="fixed inset-0 w-full h-full object-cover opacity-10 z-0">
+    <!-- BACKGROUND UTAMA -->
+    <!-- Gambar Background Form (Ganti linknya dengan PNG Anda) -->
+    <img src="BPS.png" onerror="this.src='https://placehold.co/1080x1920/0f172a/1e293b?text=Background+App'" alt="Background Sensus" class="absolute inset-0 w-full h-full object-cover opacity-10 z-0 pointer-events-none fixed">
 
-    <!-- HEADER MENU (TEMBUS PANDANG & FIXED DI ATAS) -->
-    <div class="fixed top-0 left-0 right-0 z-[100] bg-slate-900/30 backdrop-blur-lg border-b border-white/5 flex justify-between items-center p-2.5 shadow-sm">
-      <button id="btnOpenSidebar" class="bg-slate-800/80 p-2 rounded-xl text-blue-400 font-bold hover:text-blue-300 active:scale-90 transition-all border border-slate-700/50">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+    <!-- HEADER MENU FIXED -->
+    <div class="bg-slate-900/40 backdrop-blur-xl p-3 flex justify-between items-center shadow-md z-40 border-b border-slate-700/50 relative">
+      <button id="btnOpenSidebar" class="p-2 bg-slate-800/80 rounded-lg text-slate-200 border border-slate-700 active:scale-95 transition flex items-center justify-center">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
       </button>
-      
-      <div id="btnGantiWilayah" class="bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700/50 flex items-center cursor-pointer hover:bg-slate-700 active:scale-95 transition-all">
-        <div class="text-right">
-            <div class="text-[8px] font-bold text-slate-400 uppercase tracking-widest">Wilayah Tugas</div>
-            <div class="font-black text-blue-400 text-[10px] leading-tight drop-shadow-sm"><span id="labelDesa"></span> (RT <span id="labelRTRW"></span>)</div>
-        </div>
+      <div class="text-right">
+        <div class="text-[0.7rem] font-bold text-slate-400 uppercase tracking-widest">Petugas Aktif</div>
+        <div class="text-sm font-bold text-blue-400 cursor-pointer bg-slate-800/50 px-2 py-1 rounded border border-slate-700/50" id="activeUserLabel" onclick="confirmLogout()">Desa - RT/RW</div>
       </div>
     </div>
 
-    <!-- AREA SCROLL (Form & Footer) -->
-    <main class="scroll-container relative z-10 flex flex-col h-full" id="scrollArea">
-      
-      <div class="flex-none max-w-xl mx-auto w-full px-4 relative z-20 pb-4">
-        
-        <!-- BANNER FORM (Gambar Anda, Tidak Nabrak Menu, Ikut Scroll) -->
-        <div class="w-full rounded-2xl overflow-hidden mb-5 border border-slate-700/50 shadow-lg relative">
-           <img src="banner_form.png" onerror="this.src='https://placehold.co/800x300/1e293b/3b82f6?text=Banner+Sensus'" class="w-full h-auto object-cover block">
-           <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent opacity-80 pointer-events-none"></div>
-        </div>
-
-        <!-- Progress Bar -->
-        <div class="flex justify-between items-center mb-4 px-3 bg-slate-900/80 backdrop-blur-md p-3 rounded-2xl border border-slate-700/50 shadow-md">
-          <span class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Langkah <span id="stepIndicator" class="text-blue-400 text-base mx-1">1</span><span class="text-slate-500 font-medium">/ 6</span></span>
-          <div class="flex-1 ml-4 h-1.5 bg-slate-800 rounded-full overflow-hidden">
-            <div id="progressBar" class="h-full bg-blue-500 rounded-full transition-all duration-500 w-1/6 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
-          </div>
-        </div>
-
-        <form id="sensusForm" class="bg-slate-900/90 backdrop-blur-md p-5 rounded-3xl border border-slate-700/50 shadow-2xl mb-4">
-          <input type="hidden" name="id" id="sensusId" value="">
-          <input type="hidden" name="status_data" id="statusData" value="Final">
-
-          <!-- LANGKAH 1 -->
-          <div class="form-step space-y-3" data-step="1">
-            <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2 tracking-wide">Identitas Badan Usaha</h2>
-            <div><label>Nama Badan Usaha <span class="text-red-400">*</span></label><input type="text" name="nama_badan_usaha" required placeholder="Contoh: Toko Berkah"></div>
-            <div><label>Alamat Lengkap <span class="text-red-400">*</span></label><textarea name="alamat_lengkap" rows="2" required placeholder="Nama Jalan, Patokan..."></textarea></div>
-            <div><label>Nama Penanggung Jawab <span class="text-red-400">*</span></label><input type="text" name="nama_pj" required placeholder="Sesuai KTP"></div>
-            <div><label>NIK Penanggung Jawab <span class="text-red-400">*</span></label><input type="number" inputmode="numeric" name="nik_pj" required placeholder="16 Digit Angka"></div>
-            <div><label>No. WhatsApp <span class="text-red-400">*</span></label><input type="number" inputmode="numeric" name="no_wa" required placeholder="081234..."></div>
-            <div><label>Email Usaha <span class="text-red-400">*</span></label><input type="email" name="email" required placeholder="email@contoh.com"></div>
-            <div><label>Tahun Beroperasi <span class="text-red-400">*</span></label><input type="number" inputmode="numeric" name="tahun_beroperasi" required placeholder="2018"></div>
-            <div class="pt-1">
-              <label>Status Badan Usaha <span class="text-red-400">*</span></label>
-              <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih Status..." data-options="PT|PP|CV|Yayasan|Koperasi|Dana Pensiun|Perum / Perumda|BUMDes|Firma|Persekutuan Perdata|Badan Usaha Lainnya|Bukan BU" data-target="status_badan_usaha">
-              <input type="hidden" name="status_badan_usaha" required>
+    <!-- AREA SCROLL TENGAH -->
+    <div class="flex-1 overflow-y-auto relative z-10 w-full" id="scrollArea">
+      <div class="max-w-xl mx-auto p-4 w-full">
+        <form id="sensusForm" class="space-y-4">
+          <input type="hidden" name="id_sensus" id="id_sensus">
+          
+          <!-- STEP 1: IDENTITAS -->
+          <div class="step-content active" id="step1">
+            <h2 class="text-base font-bold text-blue-400 border-b border-slate-700 pb-2 mb-4">Langkah 1: Identitas Badan Usaha</h2>
+            <div class="space-y-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+              <div><label>Nama Badan Usaha <span class="text-red-500">*</span></label><input type="text" name="nama_badan_usaha" class="w-full rounded-xl"></div>
+              <div><label>Alamat Lengkap <span class="text-red-500">*</span></label><textarea name="alamat_lengkap" rows="2" class="w-full rounded-xl resize-none"></textarea></div>
+              <div><label>Nama Penanggung Jawab (PJ) <span class="text-red-500">*</span></label><input type="text" name="nama_pj" class="w-full rounded-xl"></div>
+              <div><label>NIK Penanggung Jawab <span class="text-red-500">*</span></label><input type="text" name="nik_pj" inputmode="numeric" class="w-full rounded-xl"></div>
+              <div><label>Email <span class="text-red-500">*</span></label><input type="email" name="email" class="w-full rounded-xl"></div>
+              <div><label>No. WhatsApp <span class="text-red-500">*</span></label><input type="tel" name="no_wa" inputmode="numeric" class="w-full rounded-xl"></div>
+              <div><label>Tahun Beroperasi <span class="text-red-500">*</span></label><input type="number" name="tahun_beroperasi" placeholder="2018" class="w-full rounded-xl"></div>
+              <div>
+                <label>Punya NIB? <span class="text-red-500">*</span></label>
+                <div class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 flex justify-between items-center" onclick="openDrawer('yaTidakDrawer', 'punya_nib', toggleNibField)">
+                  <span id="punya_nib_label" class="text-slate-300">-- Pilih --</span> <span class="text-slate-400">▼</span>
+                </div>
+                <input type="hidden" name="punya_nib" id="punya_nib">
+              </div>
+              <div id="fieldNoNib" class="hidden p-3 bg-slate-900/50 rounded-xl border border-slate-700"><label>Nomor NIB</label><input type="text" name="no_nib" class="w-full rounded-xl"></div>
+              <div>
+                <label>Status Badan Usaha <span class="text-red-500">*</span></label>
+                <div class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 flex justify-between items-center" onclick="openDrawer('statusBuDrawer', 'status_badan_usaha')">
+                  <span id="status_badan_usaha_label" class="text-slate-300">-- Pilih Status --</span> <span class="text-slate-400">▼</span>
+                </div>
+                <input type="hidden" name="status_badan_usaha" id="status_badan_usaha">
+              </div>
             </div>
-            <div>
-              <label>Laporan Keuangan? <span class="text-red-400">*</span></label>
-              <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih..." data-options="Ya|Tidak" data-target="laporan_keuangan">
-              <input type="hidden" name="laporan_keuangan" required>
-            </div>
+            <div class="mt-6"><button type="button" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-3.5 rounded-xl font-bold shadow-lg" onclick="nextStep(1)">Selanjutnya ➔</button></div>
           </div>
 
-          <!-- LANGKAH 2 -->
-          <div class="form-step space-y-3 hidden" data-step="2">
-            <h2 class="text-sm font-black text-white mb-4 border-l-4 border-blue-500 pl-2 tracking-wide">Jaringan & Produk</h2>
-            <div><label>Produk Utama Dihasilkan <span class="text-red-400">*</span></label><input type="text" name="produk_utama" required placeholder="Kripik Pisang"></div>
-            <div>
-              <label>Jaringan Usaha <span class="text-red-400">*</span></label>
-              <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih Jaringan..." data-options="Tunggal|Kantor Pusat|Cabang|Perwakilan|Pabrik|Unit Penunjang" data-target="jaringan_usaha">
-              <input type="hidden" name="jaringan_usaha" id="jaringanUsaha" required>
+          <!-- STEP 2: KEUANGAN & PRODUK -->
+          <div class="step-content" id="step2">
+            <h2 class="text-base font-bold text-blue-400 border-b border-slate-700 pb-2 mb-4">Langkah 2: Keuangan & Produk</h2>
+            <div class="space-y-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+              <div>
+                <label>Punya Laporan Keuangan? <span class="text-red-500">*</span></label>
+                <div class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 flex justify-between items-center" onclick="openDrawer('yaTidakDrawer', 'laporan_keuangan')">
+                  <span id="laporan_keuangan_label" class="text-slate-300">-- Pilih --</span> <span class="text-slate-400">▼</span>
+                </div>
+                <input type="hidden" name="laporan_keuangan" id="laporan_keuangan">
+              </div>
+              <div><label>Produk Utama Dihasilkan <span class="text-red-500">*</span></label><input type="text" name="produk_utama" class="w-full rounded-xl"></div>
+              <div>
+                <label>Jaringan Usaha <span class="text-red-500">*</span></label>
+                <div class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 flex justify-between items-center" onclick="openDrawer('jaringanDrawer', 'jaringan_usaha', togglePusatField)">
+                  <span id="jaringan_usaha_label" class="text-slate-300">-- Pilih Jaringan --</span> <span class="text-slate-400">▼</span>
+                </div>
+                <input type="hidden" name="jaringan_usaha" id="jaringan_usaha">
+              </div>
+              <div id="fieldKantorPusat" class="hidden p-3 bg-slate-900/50 rounded-xl border border-slate-700 space-y-3">
+                <div><label>Nama Kantor Pusat</label><input type="text" name="nama_kantor_pusat" class="w-full rounded-xl bg-slate-800"></div>
+                <div><label>Alamat Kantor Pusat</label><input type="text" name="alamat_kantor_pusat" class="w-full rounded-xl bg-slate-800"></div>
+                <div><label>Email Kantor Pusat</label><input type="email" name="email_kantor_pusat" class="w-full rounded-xl bg-slate-800"></div>
+              </div>
+              <div>
+                <label>Terlibat Koperasi Merah Putih? <span class="text-red-500">*</span></label>
+                <div class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 flex justify-between items-center" onclick="openDrawer('yaTidakDrawer', 'terlibat_kmp')">
+                  <span id="terlibat_kmp_label" class="text-slate-300">-- Pilih --</span> <span class="text-slate-400">▼</span>
+                </div>
+                <input type="hidden" name="terlibat_kmp" id="terlibat_kmp">
+              </div>
+              <div>
+                <label>Terlibat Makan Bergizi Gratis? <span class="text-red-500">*</span></label>
+                <div class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 flex justify-between items-center" onclick="openDrawer('yaTidakDrawer', 'terlibat_mbg')">
+                  <span id="terlibat_mbg_label" class="text-slate-300">-- Pilih --</span> <span class="text-slate-400">▼</span>
+                </div>
+                <input type="hidden" name="terlibat_mbg" id="terlibat_mbg">
+              </div>
             </div>
-            <div id="fieldKantorPusat" class="hidden bg-slate-800/50 p-3 rounded-2xl border border-slate-700/50 space-y-2">
-              <p class="font-bold text-blue-400 text-[9px] uppercase tracking-widest">Kantor Pusat</p>
-              <div><label>Nama Pusat</label><input type="text" name="nama_kantor_pusat" placeholder="Nama"></div>
-              <div><label>Alamat Pusat</label><input type="text" name="alamat_kantor_pusat" placeholder="Alamat"></div>
-              <div><label>Email Pusat</label><input type="email" name="email_kantor_pusat" placeholder="Email"></div>
-            </div>
-            <div class="pt-2 border-t border-slate-700/50">
-              <label>Terlibat Koperasi Merah Putih? <span class="text-red-400">*</span></label>
-              <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih..." data-options="Ya|Tidak" data-target="terlibat_kmp">
-              <input type="hidden" name="terlibat_kmp" required>
-            </div>
-            <div>
-              <label>Terlibat Makan Bergizi Gratis? <span class="text-red-400">*</span></label>
-              <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih..." data-options="Ya|Tidak" data-target="terlibat_mbg">
-              <input type="hidden" name="terlibat_mbg" required>
+            <div class="mt-6 flex gap-3">
+              <button type="button" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3.5 rounded-xl font-bold" onclick="prevStep(2)">⬅ Kembali</button>
+              <button type="button" class="flex-1 bg-blue-600 hover:bg-blue-500 py-3.5 rounded-xl font-bold" onclick="nextStep(2)">Lanjut ➔</button>
             </div>
           </div>
 
-          <!-- LANGKAH 3 -->
-          <div class="form-step space-y-3 hidden" data-step="3">
-            <h2 class="text-sm font-black text-white mb-2 border-l-4 border-blue-500 pl-2 tracking-wide">Pengeluaran 2025</h2>
-            <div class="bg-blue-900/20 text-blue-300 p-2.5 rounded-xl border border-blue-800/30 text-[9px] font-medium mb-3">Kosongkan jika nol. "Rp" & titik terisi otomatis.</div>
-            <div><label>Gaji / Upah</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_gaji" placeholder="Rp 0"></div>
-            <div><label>Biaya Produksi</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_produksi" placeholder="Rp 0"></div>
-            <div><label>Operasional</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_operasional" placeholder="Rp 0"></div>
-            <div><label>Non Operasional</label><input type="text" inputmode="numeric" data-type="currency" name="pengeluaran_non_operasional" placeholder="Rp 0"></div>
+          <!-- STEP 3: PENGELUARAN -->
+          <div class="step-content" id="step3">
+            <h2 class="text-base font-bold text-amber-400 border-b border-slate-700 pb-2 mb-4">Langkah 3: Pengeluaran 2025</h2>
+            <div class="space-y-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+              <div><label>Gaji / Upah</label><input type="text" inputmode="numeric" name="pengeluaran_gaji" class="w-full rounded-xl rp-input" placeholder="Rp 0"></div>
+              <div><label>Biaya Produksi</label><input type="text" inputmode="numeric" name="pengeluaran_produksi" class="w-full rounded-xl rp-input" placeholder="Rp 0"></div>
+              <div><label>Biaya Operasional</label><input type="text" inputmode="numeric" name="pengeluaran_operasional" class="w-full rounded-xl rp-input" placeholder="Rp 0"></div>
+              <div><label>Biaya Non-Operasional</label><input type="text" inputmode="numeric" name="pengeluaran_non_operasional" class="w-full rounded-xl rp-input" placeholder="Rp 0"></div>
+            </div>
+            <div class="mt-6 flex gap-3">
+              <button type="button" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3.5 rounded-xl font-bold" onclick="prevStep(3)">⬅ Kembali</button>
+              <button type="button" class="flex-1 bg-blue-600 hover:bg-blue-500 py-3.5 rounded-xl font-bold" onclick="nextStep(3)">Lanjut ➔</button>
+            </div>
           </div>
 
-          <!-- LANGKAH 4 -->
-          <div class="form-step space-y-3 hidden" data-step="4">
-            <h2 class="text-sm font-black text-white mb-3 border-l-4 border-blue-500 pl-2 tracking-wide">Pendapatan & Aset</h2>
-            <div><label>Pendapatan Barang & Jasa</label><input type="text" inputmode="numeric" data-type="currency" name="pendapatan_barang_jasa" placeholder="Rp 0"></div>
-            <div><label>Pendapatan Lainnya</label><input type="text" inputmode="numeric" data-type="currency" name="pendapatan_lainnya" placeholder="Rp 0"></div>
-            <hr class="border-slate-700/50 my-4">
-            <div><label>Aset Tanah & Bangunan</label><input type="text" inputmode="numeric" data-type="currency" name="aset_tanah_bangunan" placeholder="Rp 0"></div>
-            <div><label>Aset Non-Tanah</label><input type="text" inputmode="numeric" data-type="currency" name="aset_non_tanah" placeholder="Rp 0"></div>
-            <div class="pt-3 border-t border-slate-700/50">
-              <label>Luas Tempat Usaha <span class="text-red-400">*</span></label>
-              <div class="flex gap-2 items-center">
-                <input type="number" inputmode="numeric" name="luas_tempat_usaha" required placeholder="Angka..." class="flex-1">
-                <div class="w-[30%] relative">
-                  <input type="text" readonly class="custom-select-trigger cursor-pointer text-center text-blue-300 font-bold bg-slate-800" value="m²" data-options="m²|ubin" data-target="satuan_luas">
-                  <input type="hidden" name="satuan_luas" value="m²">
+          <!-- STEP 4: PENDAPATAN -->
+          <div class="step-content" id="step4">
+            <h2 class="text-base font-bold text-emerald-400 border-b border-slate-700 pb-2 mb-4">Langkah 4: Pendapatan</h2>
+            <div class="space-y-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+              <div><label>Pendapatan Barang & Jasa</label><input type="text" inputmode="numeric" name="pendapatan_barang_jasa" class="w-full rounded-xl rp-input" placeholder="Rp 0"></div>
+              <div><label>Pendapatan Lainnya</label><input type="text" inputmode="numeric" name="pendapatan_lainnya" class="w-full rounded-xl rp-input" placeholder="Rp 0"></div>
+            </div>
+            <div class="mt-6 flex gap-3">
+              <button type="button" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3.5 rounded-xl font-bold" onclick="prevStep(4)">⬅ Kembali</button>
+              <button type="button" class="flex-1 bg-blue-600 hover:bg-blue-500 py-3.5 rounded-xl font-bold" onclick="nextStep(4)">Lanjut ➔</button>
+            </div>
+          </div>
+
+          <!-- STEP 5: ASET & LUAS -->
+          <div class="step-content" id="step5">
+            <h2 class="text-base font-bold text-purple-400 border-b border-slate-700 pb-2 mb-4">Langkah 5: Aset & Tempat Usaha</h2>
+            <div class="space-y-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+              <div><label>Nilai Tanah & Bangunan</label><input type="text" inputmode="numeric" name="aset_tanah_bangunan" class="w-full rounded-xl rp-input" placeholder="Rp 0"></div>
+              <div><label>Nilai Aset Non-Tanah</label><input type="text" inputmode="numeric" name="aset_non_tanah" class="w-full rounded-xl rp-input" placeholder="Rp 0"></div>
+              <div class="grid grid-cols-3 gap-2">
+                <div class="col-span-2"><label>Luas Tempat Usaha</label><input type="text" inputmode="numeric" name="luas_tempat_usaha" class="w-full rounded-xl" placeholder="0"></div>
+                <div class="col-span-1">
+                  <label>Satuan</label>
+                  <div class="w-full bg-slate-800 border border-slate-600 rounded-xl p-3 flex justify-between items-center text-xs" onclick="openDrawer('satuanDrawer', 'satuan_luas')">
+                    <span id="satuan_luas_label" class="text-slate-300 whitespace-nowrap">m²</span><span class="text-slate-400">▼</span>
+                  </div>
+                  <input type="hidden" name="satuan_luas" id="satuan_luas" value="m²">
                 </div>
               </div>
             </div>
-          </div>
-
-          <!-- LANGKAH 5 -->
-          <div class="form-step space-y-3 hidden" data-step="5">
-            <h2 class="text-sm font-black text-white mb-3 border-l-4 border-blue-500 pl-2 tracking-wide">Perizinan NIB</h2>
-            <div>
-              <label>Punya Nomor NIB? <span class="text-red-400">*</span></label>
-              <input type="text" readonly class="custom-select-trigger cursor-pointer" placeholder="Pilih..." data-options="Ya|Tidak" data-target="punya_nib">
-              <input type="hidden" name="punya_nib" id="punyaNib" required>
-            </div>
-            <div id="fieldNoNib" class="hidden bg-slate-800/50 p-3 rounded-2xl border border-slate-700/50 mt-3">
-              <label>Nomor NIB <span class="text-red-400">*</span></label>
-              <input type="number" inputmode="numeric" name="no_nib" id="inputNoNib" placeholder="Digit NIB">
+            <div class="mt-6 flex gap-3">
+              <button type="button" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3.5 rounded-xl font-bold" onclick="prevStep(5)">⬅ Kembali</button>
+              <button type="button" class="flex-1 bg-blue-600 hover:bg-blue-500 py-3.5 rounded-xl font-bold" onclick="nextStep(5)">Lanjut ➔</button>
             </div>
           </div>
 
-          <!-- LANGKAH 6 -->
-          <div class="form-step space-y-4 hidden" data-step="6">
-            <h2 class="text-sm font-black text-white mb-3 border-l-4 border-blue-500 pl-2 tracking-wide">Penyelesaian</h2>
-            
-            <div id="areaFotoNib" class="space-y-3 bg-slate-800/40 p-4 rounded-2xl border border-slate-700/50 hidden">
-               <label class="block text-white font-bold text-[11px] uppercase tracking-widest">Upload Foto NIB</label>
-               <div id="existingPhotosContainer" class="hidden mb-2 p-2 bg-slate-900 rounded-xl border border-slate-700">
-                  <p class="text-[8px] font-bold text-emerald-400 mb-1 uppercase tracking-wider">Tersimpan di Draft:</p>
-                  <div id="existingPhotosList" class="flex gap-2 overflow-x-auto pb-1 snap-x"></div>
-               </div>
-               <div class="flex gap-2">
-                  <label class="flex-1 bg-blue-600/20 text-blue-300 font-bold py-3 rounded-xl cursor-pointer text-center text-xs border border-blue-600/30 hover:bg-blue-600/30 transition-all">
-                     Kamera <input type="file" id="inputFotoCamera" accept="image/*" capture="environment" class="hidden">
-                  </label>
-                  <label class="flex-1 bg-slate-700 text-slate-200 font-bold py-3 rounded-xl cursor-pointer text-center text-xs border border-slate-600 hover:bg-slate-600 transition-all">
-                     Galeri <input type="file" id="inputFotoGallery" accept="image/*" multiple class="hidden">
-                  </label>
-               </div>
-               <div id="stagedFilesList" class="grid grid-cols-2 gap-2 mt-2"></div>
-            </div>
-
-            <div>
-              <label>Catatan Tambahan</label>
-              <textarea name="catatan" rows="3" placeholder="Jika ada..."></textarea>
+          <!-- STEP 6: FOTO NIB & SIMPAN -->
+          <div class="step-content" id="step6">
+            <h2 class="text-base font-bold text-pink-400 border-b border-slate-700 pb-2 mb-4">Langkah 6: Foto & Penyelesaian</h2>
+            <div class="space-y-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700/50 shadow-lg">
+              <div>
+                <label>Foto Dokumen NIB</label>
+                <div class="flex gap-2 mb-2">
+                  <button type="button" onclick="document.getElementById('fileCamera').click()" class="flex-1 bg-slate-700 p-3 rounded-xl border border-slate-600 text-sm flex items-center justify-center gap-2">📸 Kamera</button>
+                  <button type="button" onclick="document.getElementById('fileGallery').click()" class="flex-1 bg-slate-700 p-3 rounded-xl border border-slate-600 text-sm flex items-center justify-center gap-2">📁 Galeri</button>
+                </div>
+                <input type="file" id="fileCamera" accept="image/*" capture="environment" class="hidden" onchange="handleFiles(this.files)">
+                <input type="file" id="fileGallery" accept="image/*" multiple class="hidden" onchange="handleFiles(this.files)">
+                <!-- Tempat Preview Foto Baru -->
+                <div id="previewContainer" class="grid grid-cols-2 gap-2 mt-2"></div>
+                <!-- Tempat Preview Foto Lama (Bila Edit Draft) -->
+                <div id="oldPreviewContainer" class="grid grid-cols-2 gap-2 mt-2 empty:hidden bg-slate-900/50 p-2 rounded-lg border border-slate-700"></div>
+                <input type="hidden" name="foto_urls_existing" id="foto_urls_existing" value="-">
+              </div>
+              <div><label>Catatan Tambahan (Opsional)</label><textarea name="catatan" rows="2" class="w-full rounded-xl resize-none"></textarea></div>
             </div>
             
-            <div class="flex flex-col gap-2.5 mt-5 pt-4 border-t border-slate-700/50">
-               <button type="button" id="btnSaveDraft" class="flex items-center justify-center w-full bg-slate-800 text-white font-bold py-3.5 rounded-xl border border-slate-700 text-[11px] hover:bg-slate-700 transition-all uppercase tracking-wide">
-                 Simpan Sebagai Draft
-               </button>
-               <button type="button" id="btnSubmitFinal" class="flex items-center justify-center w-full bg-emerald-600 text-white font-black py-3.5 rounded-xl text-[11px] shadow-lg hover:bg-emerald-500 transition-all uppercase tracking-wide">
-                 Kirim Data Final
-               </button>
+            <div class="mt-6 flex flex-col gap-3">
+               <div class="flex gap-3">
+                 <button type="button" class="flex-1 bg-slate-700 hover:bg-slate-600 py-3.5 rounded-xl font-bold" onclick="prevStep(6)">⬅ Kembali</button>
+                 <button type="button" class="flex-1 bg-amber-600 hover:bg-amber-500 py-3.5 rounded-xl font-bold text-white shadow-lg" onclick="saveData('Draft')" id="btnSaveDraft">Simpan Draft</button>
+               </div>
+               <button type="button" class="w-full bg-emerald-600 hover:bg-emerald-500 py-3.5 rounded-xl font-bold text-white shadow-lg" onclick="saveData('Final')" id="btnSubmitFinal">Kirim Data Final</button>
             </div>
-          </div>
-
-          <div class="flex gap-2 mt-5" id="navButtonsContainer">
-            <button type="button" id="btnPrev" class="hidden w-1/3 bg-slate-800 text-slate-300 border border-slate-700 font-bold py-3 rounded-xl active:scale-95 transition-all text-xs">Kembali</button>
-            <button type="button" id="btnNext" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all text-xs tracking-wide">Selanjutnya</button>
           </div>
         </form>
 
-        <!-- RIWAYAT LOKAL -->
-        <div class="mt-6 mb-4">
-          <div class="flex items-center gap-3 mb-3">
-            <div class="h-px bg-slate-800 flex-1"></div>
-            <h3 class="text-[9px] font-black text-slate-500 uppercase tracking-widest text-center">Riwayat Perangkat Ini</h3>
-            <div class="h-px bg-slate-800 flex-1"></div>
+        <!-- BAGIAN RIWAYAT PERANGKAT (BAWAH FORM) -->
+        <div class="mt-12 bg-slate-900/80 rounded-2xl border border-slate-700 p-4 mb-24">
+          <div class="flex justify-between items-center border-b border-slate-700 pb-2 mb-3">
+            <h3 class="font-bold text-slate-300 text-sm">Riwayat Input Perangkat Ini</h3>
+            <span class="text-[0.65rem] bg-slate-800 px-2 py-1 rounded text-slate-400">Hanya data lokal</span>
           </div>
-          <div id="recentHistoryList" class="space-y-2.5">
-            <p class="text-center text-[10px] text-slate-600 font-medium bg-slate-900/40 p-3 rounded-xl border border-slate-800/50" id="emptyRecent">Belum ada inputan.</p>
+          <div id="localHistoryContainer" class="space-y-3">
+             <div class="text-center text-slate-500 text-xs py-4">Belum ada riwayat pendataan dari perangkat ini.</div>
           </div>
         </div>
-
       </div>
-
+      
       <!-- FOOTER FIXED DI DASAR SCROLL -->
-      <footer class="mt-auto flex-none bg-slate-950/80 backdrop-blur-md border-t border-slate-800/50 p-3 flex justify-between items-center gap-2 relative z-20">
-        <img src="logo_kiri.png" onerror="this.src='https://placehold.co/100x100/0f172a/3b82f6?text=L1'" class="w-7 h-7 object-contain shrink-0">
-        <div class="flex-1 relative overflow-hidden flex items-center h-5">
-           <div class="absolute left-0 top-0 bottom-0 w-6 bg-gradient-to-r from-slate-950 to-transparent z-10"></div>
-           <div class="absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-slate-950 to-transparent z-10"></div>
-           <div class="animate-marquee whitespace-nowrap text-[9px] text-slate-400 font-medium tracking-widest uppercase">
-              BPS KABUPATEN KEBUMEN • Jl. Arungbinang No.19, Kebumen • Melayani dengan Profesional • Sensus Ekonomi 2026
-           </div>
-        </div>
-        <img src="logo_kanan.png" onerror="this.src='https://placehold.co/100x100/0f172a/3b82f6?text=L2'" class="w-7 h-7 object-contain shrink-0">
-      </footer>
-    </main>
-  </div>
-
-  <!-- LACI ANIMASI PILIHAN -->
-  <div class="drawer-overlay" id="drawerOverlay"></div>
-  <div class="drawer-content px-4 pb-8 pt-3" id="drawerContent">
-    <div class="w-10 h-1 bg-slate-700 rounded-full mx-auto mb-4"></div>
-    <h3 class="font-black text-[11px] mb-4 text-center text-slate-300 uppercase tracking-widest" id="drawerTitle">Pilih</h3>
-    <div class="overflow-y-auto flex-1 space-y-2 max-h-[60vh] pr-1" id="drawerList"></div>
-  </div>
-
-  <!-- SIDEBAR RIWAYAT ADMIN -->
-  <div id="sidebarHistory" class="fixed inset-y-0 left-0 w-[85%] max-w-sm bg-slate-950 border-r border-slate-800 shadow-2xl z-[8000] transform -translate-x-full transition-transform duration-300 flex flex-col">
-    <div class="p-4 bg-slate-900/90 backdrop-blur-md text-white flex justify-between items-center flex-none border-b border-slate-800">
-      <h2 class="font-black text-sm text-blue-400 tracking-wide uppercase">Database Wilayah</h2>
-      <button id="btnCloseSidebar" class="p-2 bg-slate-800 text-slate-300 rounded-xl active:scale-90 transition-all hover:text-white"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-    </div>
-    <div class="flex-1 overflow-y-auto p-3 bg-slate-950 space-y-2.5" id="serverHistoryList">
-       <div class="flex justify-center items-center h-full text-slate-500 text-[10px] flex-col gap-2" id="adminLoadingText"></div>
-    </div>
-  </div>
-
-  <!-- MODAL PASSWORD ADMIN -->
-  <div id="adminPasswordModal" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-[9000] hidden flex justify-center items-center p-4 transition-opacity">
-    <div class="bg-slate-900 border border-slate-700 p-6 rounded-3xl w-full max-w-xs shadow-2xl scale-95 transition-transform" id="adminModalBox">
-      <h3 class="font-black text-white text-base mb-1 text-center tracking-wide">OTORISASI PETUGAS</h3>
-      <p class="text-[10px] text-slate-400 mb-5 text-center leading-relaxed">Masukkan sandi akses database.</p>
-      <input type="password" id="inputAdminPass" placeholder="Sandi..." class="w-full p-3 border border-slate-700 bg-slate-800 text-white rounded-xl mb-2 font-bold text-center tracking-widest outline-none focus:border-blue-500 text-sm">
-      <p id="errAdminPass" class="text-red-400 text-[9px] font-bold text-center mb-3 hidden">Password Salah!</p>
-      <div class="flex gap-2 mt-2">
-        <button id="btnCancelAdmin" class="flex-1 bg-slate-800 text-slate-300 font-bold py-3 rounded-xl text-[10px] active:scale-95 transition-all border border-slate-700 uppercase">Batal</button>
-        <button id="btnSubmitAdmin" class="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl text-[10px] active:scale-95 transition-all shadow-lg uppercase">Verifikasi</button>
+      <div class="w-full bg-slate-900/90 border-t border-slate-800/80 flex items-center justify-between p-3 mt-auto">
+         <!-- Ganti src dengan logo kiri Anda -->
+         <img src="logo_kiri.png" onerror="this.src='https://placehold.co/40x40/1e293b/3b82f6?text=L'" class="h-8 w-8 rounded z-10 bg-slate-800 object-cover">
+         <div class="flex-1 overflow-hidden relative mx-3">
+             <div class="absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-slate-900/90 to-transparent z-10"></div>
+             <div class="absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-slate-900/90 to-transparent z-10"></div>
+             <marquee class="text-[0.7rem] font-bold text-slate-300 tracking-wider whitespace-nowrap pt-1">
+                 BPS KABUPATEN KEBUMEN - BADAN PUSAT STATISTIK KABUPATEN KEBUMEN - Jl. Arungbinang No.21, Kebumen.
+             </marquee>
+         </div>
+         <!-- Ganti src dengan logo kanan Anda -->
+         <img src="logo_kanan.png" onerror="this.src='https://placehold.co/40x40/1e293b/3b82f6?text=R'" class="h-8 w-8 rounded z-10 bg-slate-800 object-cover">
       </div>
     </div>
   </div>
 
-  <!-- MODAL DETAIL READ-ONLY -->
-  <div id="detailModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-xl z-[9500] hidden flex-col transition-opacity">
-    <div class="p-3 bg-slate-900 flex justify-between items-center border-b border-slate-800 flex-none shadow-md">
-       <h3 class="font-black text-[11px] text-white uppercase tracking-widest">Rincian Data</h3>
-       <button id="btnCloseDetail" class="p-2 bg-slate-800 rounded-xl text-slate-300 active:scale-90 transition-all"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-    </div>
-    <div class="flex-1 overflow-y-auto p-4 bg-slate-950" id="detailModalContent"></div>
+  <!-- MODAL / DRAWER OPTIONS -->
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  <div class="drawer-content" id="drawerContent">
+    <div id="drawerOptionsList"></div>
   </div>
 
-  <!-- ========================================== -->
-  <!-- JAVASCRIPT LOGIC -->
-  <!-- ========================================== -->
-  <script>
-    // =========================================================
-    // PASTIKAN GANTI URL INI DENGAN URL WEB APP BARU ANDA (DIRECT LINK CODE.GS BARU)
-    // =========================================================
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzyhWyj7l9DMKRE2tbxiOftQ658IBh8H5st9n4tKJt1eiBNR18UiCekgh3oRbF67HIO/exec'; 
+  <!-- KONFIRMASI CUSTOM (Pengganti Alert/Confirm bawaan) -->
+  <div id="confirmModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 w-full max-w-xs text-center shadow-2xl transform scale-95 transition-transform" id="confirmBox">
+      <h3 class="text-lg font-bold text-white mb-2" id="confirmTitle">Konfirmasi</h3>
+      <p class="text-sm text-slate-300 mb-5" id="confirmMessage">Pesan disini</p>
+      <div class="flex gap-3">
+        <button id="btnConfirmNo" class="flex-1 bg-slate-700 text-white py-2.5 rounded-xl font-semibold">Batal</button>
+        <button id="btnConfirmYes" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-semibold">Ya</button>
+      </div>
+    </div>
+  </div>
 
+  <!-- TOAST NOTIFICATION -->
+  <div id="toast" class="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] hidden bg-red-500 text-white px-4 py-2 rounded-xl shadow-lg font-medium text-sm flex items-center gap-2 whitespace-nowrap">
+    <span id="toastMsg">Pesan Toast</span>
+  </div>
+
+  <!-- MODAL DETAIL DATA (Lokal & Global) -->
+  <div id="detailModal" class="fixed inset-0 bg-slate-950 z-[9999] hidden flex-col transition-transform duration-300 translate-y-full">
+    <div class="bg-slate-900/80 backdrop-blur-md p-4 border-b border-slate-800 flex justify-between items-center shadow-md">
+      <h3 class="font-bold text-lg text-white truncate" id="detailTitle">Rincian Data</h3>
+      <button id="btnCloseDetail" class="text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800">Tutup ✕</button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-950" id="detailContent"></div>
+  </div>
+
+  <!-- MODAL PASSWORD (Untuk Admin Server) -->
+  <div id="adminPasswordModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-[9999] hidden flex items-center justify-center p-4">
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl p-5 w-full max-w-xs text-center shadow-2xl transform scale-95 transition-transform" id="adminModalBox">
+      <h3 class="text-lg font-bold text-white mb-2">Akses Terkunci</h3>
+      <p class="text-xs text-slate-400 mb-4">Masukkan sandi petugas untuk melihat data.</p>
+      <input type="password" id="inputAdminPass" class="w-full rounded-xl text-center mb-2" placeholder="Password...">
+      <p id="errAdminPass" class="text-red-400 text-xs mb-4 hidden">Password Salah!</p>
+      <div class="flex gap-3 mt-2">
+        <button id="btnCancelAdmin" class="flex-1 bg-slate-700 text-white py-2.5 rounded-xl font-semibold">Batal</button>
+        <button id="btnSubmitAdmin" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl font-semibold">Buka</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIDEBAR (GLOBAL HISTORY DATABASE) -->
+  <div id="sidebarHistory" class="fixed inset-y-0 left-0 w-80 bg-slate-900 z-[9998] transform -translate-x-full transition-transform duration-300 shadow-2xl flex flex-col border-r border-slate-800">
+    <div class="p-4 border-b border-slate-800 bg-slate-850 flex justify-between items-center">
+      <div>
+        <h2 class="font-bold text-white text-base">Database Wilayah</h2>
+        <p class="text-xs text-slate-400">Data Master Server</p>
+      </div>
+      <button id="btnCloseSidebar" class="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white">✕</button>
+    </div>
+    <div class="p-3 border-b border-slate-800">
+      <input type="text" id="searchGlobal" placeholder="Cari data server..." class="w-full rounded-lg text-sm p-2 bg-slate-800">
+    </div>
+    <div class="flex-1 overflow-y-auto p-3 space-y-3" id="globalHistoryContainer">
+       <!-- Data server diload disini -->
+    </div>
+  </div>
+
+  <script>
+    // --- KONFIGURASI URL GOOGLE APPS SCRIPT ---
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycb...GANTI_DENGAN_URL_ANDA.../exec';
+    
+    // --- VARIABEL & STATE ---
     let currentStep = 1;
     const totalSteps = 6;
-    let stagedFilesArray = [];
+    let selectedFiles = []; // File Baru
+    const LOCAL_DRAFT_KEY = 'SENSUS_UMKM_LOCAL';
     let serverDataCache = [];
-    
-    // Ikon Loading SVG
-    const svgSpinner = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+    let publicDataCache = [];
+    let pendingDetailId = null;
+    let pendingDetailSheet = null;
 
-    // --- POPUP KONFIRMASI ---
+    // --- SMART BACK BUTTON & MODAL MANAGER (ANTI FREEZE) ---
+    // Fungsi pamungkas untuk memaksa tutup semua modal transparan yang menghalangi klik
+    function closeAllModals() {
+        document.getElementById('confirmModal').classList.add('hidden');
+        document.getElementById('adminPasswordModal').classList.add('hidden');
+        document.getElementById('detailModal').classList.add('hidden');
+        document.getElementById('publicModal').classList.add('hidden');
+        document.getElementById('sidebarHistory').classList.add('-translate-x-full');
+        document.getElementById('drawerOverlay').classList.remove('active');
+        document.getElementById('drawerContent').classList.remove('active');
+    }
+
+    // Mendengarkan tombol Back fisik / browser
+    window.addEventListener('popstate', (e) => {
+        closeAllModals(); // Paling utama: hancurkan semua modal!
+        if (e.state && e.state.step) {
+            currentStep = e.state.step; 
+            showStep(currentStep, false); 
+        } else if (currentStep > 1 && !e.state) {
+            currentStep--; 
+            showStep(currentStep, false);
+        }
+    });
+
+    // Custom UI Confirm 
     let confirmCallback = null;
     function showConfirm(title, message, callback) {
       document.getElementById('confirmTitle').innerText = title;
@@ -385,393 +436,441 @@
       setTimeout(() => document.getElementById('confirmBox').classList.remove('scale-95'), 10);
       history.pushState({modal: 'confirm'}, '');
     }
-    document.getElementById('btnConfirmNo').addEventListener('click', () => history.back());
+    document.getElementById('btnConfirmNo').addEventListener('click', () => { closeAllModals(); history.back(); });
     document.getElementById('btnConfirmYes').addEventListener('click', () => { 
-        history.back(); if(confirmCallback) setTimeout(() => confirmCallback(), 200); 
+        closeAllModals(); if(confirmCallback) setTimeout(() => confirmCallback(), 200); history.back();
     });
 
-    // --- SMART BACK BUTTON ---
-    window.addEventListener('popstate', (e) => {
-        if (!document.getElementById('confirmModal').classList.contains('hidden')) {
-            document.getElementById('confirmBox').classList.add('scale-95');
-            setTimeout(() => document.getElementById('confirmModal').classList.add('hidden'), 200);
-        } else if (!document.getElementById('publicModal').classList.contains('hidden')) {
-            document.getElementById('publicModal').classList.add('translate-y-full');
-            setTimeout(() => document.getElementById('publicModal').classList.add('hidden'), 300);
-        } else if (document.getElementById('detailModal').classList.contains('flex')) {
-            document.getElementById('detailModal').classList.remove('flex');
-            document.getElementById('detailModal').classList.add('hidden');
-        } else if (!document.getElementById('sidebarHistory').classList.contains('-translate-x-full')) {
-            document.getElementById('sidebarHistory').classList.add('-translate-x-full');
-        } else if (!document.getElementById('adminPasswordModal').classList.contains('hidden')) {
-            document.getElementById('adminModalBox').classList.add('scale-95');
-            setTimeout(() => document.getElementById('adminPasswordModal').classList.add('hidden'), 200);
-        } else if (document.getElementById('drawerOverlay').classList.contains('active')) {
-            closeDrawer();
-        } else {
-            if (e.state && e.state.step) {
-                currentStep = e.state.step; showStep(currentStep, false); 
-            } else if (currentStep > 1) {
-                currentStep--; showStep(currentStep, false);
-            }
-        }
-    });
-
-    // --- LOGIN SYSTEM ---
-    const authDesa = localStorage.getItem('auth_desa');
-    if (authDesa) {
-      document.getElementById('loginOverlay').classList.add('hidden');
-      document.getElementById('mainApp').classList.remove('hidden');
-      document.getElementById('labelDesa').innerText = authDesa;
-      document.getElementById('labelRTRW').innerText = `${localStorage.getItem('auth_rt')} / ${localStorage.getItem('auth_rw')}`;
-      history.replaceState({step: 1}, ''); 
-      renderRecentHistory();
+    // Toast Peringatan
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('hidden'); toast.classList.add('toast-anim');
+      setTimeout(() => { toast.classList.remove('toast-anim'); toast.classList.add('hidden'); }, 3000);
     }
 
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const desa = document.getElementById('loginDesaValue').value;
-      const rt = document.getElementById('loginRT').value;
-      const rw = document.getElementById('loginRW').value;
-      if (!desa) { showToast('Pilih Desa terlebih dahulu!', 'error'); return; }
-      localStorage.setItem('auth_desa', desa);
-      localStorage.setItem('auth_rt', rt);
-      localStorage.setItem('auth_rw', rw);
-      window.location.reload();
-    });
-    
-    document.getElementById('btnGantiWilayah').addEventListener('click', () => {
-       showConfirm("Ganti Wilayah?", "Sesi (RT/RW/Desa) akan direset.", () => { localStorage.clear(); window.location.reload(); });
+    // --- LOGIN SYSTEM ---
+    window.onload = () => {
+        const auth = JSON.parse(localStorage.getItem('auth_petugas') || 'null');
+        if (auth) {
+            document.getElementById('loginOverlay').classList.add('hidden');
+            document.getElementById('mainApp').classList.remove('hidden');
+            document.getElementById('activeUserLabel').innerText = `${auth.desa} - RT ${auth.rt}/RW ${auth.rw}`;
+            renderLocalHistory();
+            history.replaceState({step: 1}, '');
+        }
+    };
+
+    document.getElementById('btnLogin').addEventListener('click', () => {
+        const desa = document.getElementById('login_desa').value;
+        const rt = document.getElementById('login_rt').value;
+        const rw = document.getElementById('login_rw').value;
+        if (!desa || !rt || !rw) return showToast("Mohon isi Desa, RT, dan RW!");
+        const authData = { desa, rt, rw };
+        localStorage.setItem('auth_petugas', JSON.stringify(authData));
+        document.getElementById('loginOverlay').classList.add('hidden');
+        document.getElementById('mainApp').classList.remove('hidden');
+        document.getElementById('activeUserLabel').innerText = `${desa} - RT ${rt}/RW ${rw}`;
+        renderLocalHistory();
+        history.replaceState({step: 1}, '');
     });
 
-    // --- PUBLIK DIREKTORI UMKM (DI LAYAR LOGIN) ---
+    function confirmLogout() {
+        showConfirm("Ganti Wilayah", "Ganti tugas ke wilayah RT/RW/Desa lain?", () => {
+            localStorage.removeItem('auth_petugas');
+            window.location.reload();
+        });
+    }
+
+    // --- DIRECTORY UMKM PUBLIK ---
     document.getElementById('btnOpenPublic').addEventListener('click', () => {
        history.pushState({modal: 'public'}, '');
        document.getElementById('publicModal').classList.remove('hidden');
        setTimeout(() => document.getElementById('publicModal').classList.remove('translate-y-full'), 10);
        loadPublicUmkm();
     });
-    document.getElementById('btnClosePublic').addEventListener('click', () => history.back());
+    document.getElementById('btnClosePublic').addEventListener('click', () => { closeAllModals(); history.back(); });
 
     function loadPublicUmkm() {
-       const content = document.getElementById('publicListContent');
-       document.getElementById('publicLoading').style.display = 'flex';
-       
-       fetch(`${SCRIPT_URL}?action=get_public`)
-       .then(r => r.json())
-       .then(res => {
-           content.innerHTML = '';
-           if(res.status === 'success' && res.data.length > 0) {
-               res.data.forEach(item => {
-                   let fotoHtml = `<div class="w-16 h-16 bg-slate-800 rounded-lg shrink-0 flex items-center justify-center text-slate-600 border border-slate-700 shadow-sm"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>`;
-                   if(item.foto && item.foto !== "-") {
-                       const fUrl = item.foto.split(' , \n')[0];
-                       if(fUrl) fotoHtml = `<img src="${fUrl}" class="w-16 h-16 object-cover rounded-lg shrink-0 border border-slate-700 shadow-sm">`;
-                   }
-                   content.innerHTML += `
-                     <div class="bg-slate-900 border border-slate-800 p-3 rounded-2xl flex gap-3 shadow-md items-center">
-                        ${fotoHtml}
-                        <div class="flex-1 overflow-hidden pr-2">
-                           <p class="text-[11px] font-bold text-white truncate">${item.nama || 'Tanpa Nama'}</p>
-                           <p class="text-[9px] text-slate-400 truncate mt-0.5">${item.alamat || '-'}</p>
-                           <p class="text-[8px] font-bold text-blue-400 mt-1 uppercase tracking-wider">RT ${item.rt} / RW ${item.rw}</p>
-                        </div>
-                        <button onclick="promptDetailGlobal('${item.id}', 'RIWAYAT SE2026')" class="p-2.5 bg-slate-800 rounded-xl text-slate-300 hover:text-white border border-slate-700 active:scale-90 transition-all shrink-0"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg></button>
-                     </div>
-                   `;
-               });
-           } else {
-               content.innerHTML = `<p class="text-center text-slate-500 text-[10px] mt-10">Belum ada data UMKM terdaftar.</p>`;
-           }
-       })
-       .catch(e => content.innerHTML = `<p class="text-center text-red-400 text-[10px] mt-10">Gagal memuat. Periksa internet.</p>`);
-    }
-
-    // --- FORM MULTI-STEP ---
-    function showStep(step, pushHistory = true) {
-      if(pushHistory) history.pushState({step: step}, '');
-      document.querySelectorAll('.form-step').forEach(el => el.classList.add('hidden'));
-      document.querySelector(`.form-step[data-step="${step}"]`).classList.remove('hidden');
-      document.getElementById('btnPrev').classList.toggle('hidden', step === 1);
-      document.getElementById('navButtonsContainer').classList.toggle('hidden', step === totalSteps);
-      document.getElementById('stepIndicator').innerText = step;
-      document.getElementById('progressBar').style.width = `${(step/totalSteps)*100}%`;
-      document.getElementById('scrollArea').scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    function validateCurrentStep() {
-      const inputs = document.querySelector(`.form-step[data-step="${currentStep}"]`).querySelectorAll('[required]');
-      for (let el of inputs) {
-        if (!el.value.trim() && el.offsetParent !== null) {
-           let lbl = el.closest('div').querySelector('label');
-           showToast(`Harap isi: ${lbl ? lbl.innerText.replace('*','').trim() : 'Kolom Wajib'}`, 'error');
-           return false;
-        }
-      }
-      return true;
-    }
-
-    document.getElementById('btnNext').addEventListener('click', () => { if (validateCurrentStep()) { currentStep++; showStep(currentStep); } });
-    document.getElementById('btnPrev').addEventListener('click', () => { if (currentStep > 1) { history.back(); } });
-
-    // --- LACI OPSI (DRAWER) ---
-    const drawerOverlay = document.getElementById('drawerOverlay');
-    const drawerContent = document.getElementById('drawerContent');
-    const drawerList = document.getElementById('drawerList');
-    let currentDrawerTarget = null;
-
-    document.querySelectorAll('.custom-select-trigger').forEach(trigger => {
-      trigger.addEventListener('click', function(e) {
-        e.preventDefault(); this.blur(); currentDrawerTarget = this;
-        const opts = this.dataset.options.split('|'), targetName = this.dataset.target;
-        const hiddenInput = document.querySelector(`input[name="${targetName}"]`);
-        let currentVal = hiddenInput ? hiddenInput.value : "";
-        let lbl = this.closest('div').querySelector('label');
-        document.getElementById('drawerTitle').innerText = lbl ? lbl.innerText.replace('*','').trim() : "Pilih Opsi";
-        
-        drawerList.innerHTML = '';
-        opts.forEach(opt => {
-          const btn = document.createElement('button');
-          btn.className = `w-full text-left p-3.5 rounded-xl font-bold transition-all text-xs mb-1.5 ${currentVal === opt ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-800 text-slate-300 border border-slate-700/50 hover:bg-slate-700'}`;
-          btn.innerText = opt; btn.type = "button";
-          btn.onclick = () => {
-            currentDrawerTarget.value = opt;
-            if(hiddenInput) { hiddenInput.value = opt; hiddenInput.dispatchEvent(new Event('change')); }
-            if(targetName === 'login_desa') document.getElementById('loginDesaValue').value = opt;
-            closeDrawer();
-          };
-          drawerList.appendChild(btn);
-        });
-        drawerOverlay.classList.add('active'); drawerContent.classList.add('active');
-        history.pushState({modal: 'drawer'}, ''); 
-      });
-    });
-    function closeDrawer() { drawerOverlay.classList.remove('active'); drawerContent.classList.remove('active'); }
-    drawerOverlay.addEventListener('click', () => history.back());
-
-    // --- LOGIKA TAMPIL/SEMBUNYI ---
-    document.getElementById('punyaNib').addEventListener('change', function() {
-      const field = document.getElementById('fieldNoNib'), input = document.getElementById('inputNoNib'), areaFoto = document.getElementById('areaFotoNib');
-      if(this.value === 'Ya') { field.classList.remove('hidden'); input.setAttribute('required', 'true'); areaFoto.classList.remove('hidden'); } 
-      else { field.classList.add('hidden'); input.removeAttribute('required'); input.value = ''; areaFoto.classList.add('hidden'); stagedFilesArray = []; renderStagedFiles(); }
-    });
-
-    document.getElementById('jaringanUsaha').addEventListener('change', function() {
-      const field = document.getElementById('fieldKantorPusat');
-      if(['Cabang', 'Perwakilan', 'Pabrik', 'Unit Penunjang'].includes(this.value)) field.classList.remove('hidden'); else field.classList.add('hidden');
-    });
-
-    // --- FORMAT UANG ---
-    function formatRupiah(angka) {
-      let num = angka.replace(/[^0-9]/g, ''); if(num === "") return "";
-      let sisa = num.length % 3, rup = num.substr(0, sisa), rib = num.substr(sisa).match(/\d{3}/gi);
-      if (rib) { rup += (sisa ? '.' : '') + rib.join('.'); } return 'Rp ' + rup;
-    }
-    document.querySelectorAll('input[data-type="currency"]').forEach(input => {
-      input.addEventListener('keyup', function() { this.value = formatRupiah(this.value); });
-    });
-
-    // --- UPLOAD FOTO ---
-    function handleFileInput(e) {
-      const files = e.target.files; if (!files.length) return;
-      showToast('Memproses foto...', 'success');
-      for(let i = 0; i < files.length; i++) {
-        const file = files[i], reader = new FileReader();
-        reader.onload = (ev) => {
-           let dataUrl = ev.target.result;
-           stagedFilesArray.push({ id: Date.now()+i, name: file.name, mimeType: file.type, base64: dataUrl.split(',')[1], preview: dataUrl });
-           renderStagedFiles();
-        };
-        reader.readAsDataURL(file);
-      }
-      e.target.value = '';
-    }
-    document.getElementById('inputFotoCamera').addEventListener('change', handleFileInput);
-    document.getElementById('inputFotoGallery').addEventListener('change', handleFileInput);
-
-    function renderStagedFiles() {
-      const list = document.getElementById('stagedFilesList'); list.innerHTML = '';
-      stagedFilesArray.forEach(file => {
-        list.innerHTML += `<div class="relative rounded-xl overflow-hidden border border-slate-700 aspect-square shadow-md"><img src="${file.preview}" class="w-full h-full object-cover"><div class="absolute inset-0 bg-black/60 flex flex-col justify-center items-center opacity-0 hover:opacity-100 transition-opacity"><p class="text-[7px] text-white mb-2 text-center px-1 truncate w-full">${file.name}</p><button type="button" onclick="stagedFilesArray = stagedFilesArray.filter(f => f.id !== ${file.id}); renderStagedFiles();" class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-[9px] font-black">Hapus</button></div></div>`;
-      });
-    }
-
-    function showToast(msg, type='success') {
-      const t = document.getElementById('toast'); t.innerText = msg;
-      t.className = `fixed top-16 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl text-white font-bold transition-all duration-300 z-[10000] text-[10px] whitespace-nowrap text-center max-w-[90%] truncate border border-white/10 backdrop-blur-md ${type==='success'?'bg-emerald-600/90':'bg-red-600/90'}`;
-      t.classList.remove('opacity-0', 'pointer-events-none');
-      setTimeout(() => t.classList.add('opacity-0', 'pointer-events-none'), 3500);
-    }
-
-    // --- PENGIRIMAN DATA ---
-    function validateFinal() {
-      for (let el of document.getElementById('sensusForm').querySelectorAll('[required]')) {
-         if (!el.value.trim() && el.offsetParent !== null) {
-            const step = parseInt(el.closest('.form-step').dataset.step);
-            if(currentStep !== step) { currentStep = step; showStep(currentStep, false); }
-            let lbl = el.closest('div').querySelector('label');
-            showToast(`Wajib diisi: ${lbl ? lbl.innerText.replace('*','').trim() : 'Kolom ini'}`, 'error');
-            return false;
-         }
-      }
-      return true;
-    }
-
-    async function postData(statusType, btnElement) {
-      if (statusType === 'Final' && !validateFinal()) return;
-      const originalText = btnElement.innerText;
-      btnElement.disabled = true;
-      btnElement.innerHTML = `${svgSpinner} Memproses...`;
-
-      document.getElementById('statusData').value = statusType;
-      const data = Object.fromEntries(new FormData(document.getElementById('sensusForm')).entries());
-      document.querySelectorAll('input[data-type="currency"]').forEach(input => {
-         let raw = input.value.replace(/[^0-9]/g, ''); data[input.name] = raw ? raw : "0";
-      });
-
-      const existingUrls = Array.from(document.getElementById('existingPhotosList').querySelectorAll('img')).map(img => img.src).join(' , \n');
-      data.foto_urls_existing = existingUrls || "-";
-
-      const payload = { action: 'save', sheetName: localStorage.getItem('auth_desa'), data: { ...data, rt: localStorage.getItem('auth_rt'), rw: localStorage.getItem('auth_rw') }, files: stagedFilesArray };
-
-      try {
-        const res = await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
-        const result = await res.json();
-        if (result.status === 'success') {
-           showToast(result.message, 'success');
-           saveToRecentHistory(result.id, result.nama_usaha, statusType, result.newUrls, data);
-           resetFormTotal();
-        } else { showToast(result.message, 'error'); }
-      } catch (err) { showToast('Gagal mengirim data. Coba lagi.', 'error'); } 
-      finally { btnElement.disabled = false; btnElement.innerText = originalText; }
-    }
-
-    document.getElementById('btnSaveDraft').addEventListener('click', function() { postData('Draft', this); });
-    document.getElementById('btnSubmitFinal').addEventListener('click', function() { postData('Final', this); });
-
-    function resetFormTotal() {
-       document.getElementById('sensusForm').reset();
-       document.getElementById('sensusId').value = '';
-       document.querySelectorAll('.custom-select-trigger').forEach(el => { el.value = ''; let h = document.querySelector(`input[name="${el.dataset.target}"]`); if(h) h.value = ''; });
-       stagedFilesArray = []; renderStagedFiles();
-       document.getElementById('existingPhotosContainer').classList.add('hidden'); document.getElementById('existingPhotosList').innerHTML = '';
-       document.getElementById('punyaNib').dispatchEvent(new Event('change')); document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
-       currentStep = 1; showStep(1, false);
-       document.getElementById('scrollArea').scrollTo(0,0);
-    }
-
-    // --- RIWAYAT LOKAL ---
-    function saveToRecentHistory(id, nama, status, additionalUrls = "", payload = null) {
-       let arr = JSON.parse(localStorage.getItem('recent_submissions') || '[]');
-       const idx = arr.findIndex(h => h.id === id);
-       let finalUrls = additionalUrls, finalPayload = payload;
-       if(idx !== -1) { if(!finalUrls) finalUrls = arr[idx].urls || ""; if(!finalPayload) finalPayload = arr[idx].payload || null; }
-       const newItem = { id, nama, status, time: new Date().toLocaleTimeString(), urls: finalUrls, payload: finalPayload };
-       if(idx !== -1) arr[idx] = newItem; else arr.unshift(newItem);
-       if(arr.length > 10) arr.pop(); localStorage.setItem('recent_submissions', JSON.stringify(arr));
-       renderRecentHistory();
+        document.getElementById('publicListContainer').innerHTML = '<div class="text-center text-slate-400 mt-10 loader"></div>';
+        fetch(`${SCRIPT_URL}?action=get_public`).then(r=>r.json()).then(res => {
+            if(res.status === 'success') { publicDataCache = res.data; renderPublicList(publicDataCache); }
+            else { document.getElementById('publicListContainer').innerHTML = '<div class="text-center text-red-400">Gagal memuat.</div>'; }
+        }).catch(e => { document.getElementById('publicListContainer').innerHTML = '<div class="text-center text-red-400">Gangguan jaringan.</div>'; });
     }
     
-    function renderRecentHistory() {
-       const list = document.getElementById('recentHistoryList'), empty = document.getElementById('emptyRecent');
-       let arr = JSON.parse(localStorage.getItem('recent_submissions') || '[]');
-       if(arr.length === 0) return; empty.style.display = 'none'; list.innerHTML = '';
-       arr.forEach(item => {
-          let photoHtml = '';
-          if(item.urls && item.urls !== "-" && item.urls.trim() !== "") {
-              photoHtml = `<div class="mt-2 flex gap-2 overflow-x-auto pb-1 snap-x">`;
-              item.urls.split(' , \n').forEach(u => { if(u.trim()) photoHtml += `<img src="${u}" class="h-10 w-10 rounded object-cover border border-slate-700 shrink-0">`; });
-              photoHtml += `</div>`;
-          }
-          list.innerHTML += `
-            <div class="bg-slate-900/60 backdrop-blur-sm p-3 rounded-2xl border border-slate-800/50 shadow-sm">
-               <div class="flex justify-between items-start">
-                 <div class="overflow-hidden pr-2"><p class="font-bold text-white text-[11px] truncate">${item.nama || 'Tanpa Nama'}</p><p class="text-[9px] text-slate-500 mt-0.5">${item.time}</p></div>
-                 <span class="text-[8px] font-black px-1.5 py-1 rounded shadow-inner ${item.status==='Final'?'bg-emerald-900/60 text-emerald-400':'bg-amber-900/60 text-amber-400'}">${item.status}</span>
+    function renderPublicList(data) {
+        const container = document.getElementById('publicListContainer');
+        if(data.length === 0) return container.innerHTML = '<div class="text-center text-slate-500">Belum ada data.</div>';
+        container.innerHTML = data.map(item => `
+            <div class="bg-slate-800/80 p-4 rounded-xl flex gap-4 border border-slate-700">
+               <div class="w-16 h-16 rounded-lg bg-slate-700 overflow-hidden shrink-0 flex items-center justify-center">
+                   ${item.foto && item.foto !== '-' ? `<img src="${item.foto.split(' , \n')[0]}" class="w-full h-full object-cover">` : `<span class="text-xl">🏪</span>`}
                </div>
-               ${photoHtml}
-               ${item.status === 'Draft' 
-                   ? `<div class="flex gap-2 mt-3"><button type="button" onclick="loadDraftLokal('${item.id}')" class="flex-1 bg-amber-600/20 text-amber-400 border border-amber-600/30 py-2 rounded-xl text-[9px] font-bold">Lanjutkan Edit Draft</button><button type="button" onclick="hapusDraftLokal('${item.id}', this)" class="bg-slate-800 text-slate-300 py-2 rounded-xl text-[9px] font-bold px-3">Hapus</button></div>`
-                   : `<button type="button" onclick="lihatDetailLokal('${item.id}')" class="mt-3 w-full bg-emerald-600/20 text-emerald-400 border border-emerald-600/30 py-2 rounded-xl text-[9px] font-bold uppercase flex items-center justify-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg> Lihat Data Final</button>`
-               }
-            </div>`;
-       });
+               <div class="flex-1">
+                   <div class="font-bold text-blue-300 text-base">${item.nama}</div>
+                   <div class="text-xs text-slate-400 mt-1">${item.alamat} (RT${item.rt}/RW${item.rw})</div>
+               </div>
+               <button onclick="promptDetailGlobal('${item.id}', 'RIWAYAT SE2026')" class="p-2 text-slate-400 hover:text-white shrink-0 self-center border border-slate-600 rounded bg-slate-750">
+                  🔒 Detail
+               </button>
+            </div>
+        `).join('');
+    }
+    document.getElementById('searchPublic').addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        renderPublicList(publicDataCache.filter(item => item.nama.toLowerCase().includes(q) || item.alamat.toLowerCase().includes(q)));
+    });
+
+    // --- DRAWER OPTIONS (LACI ANIMASI) ---
+    const optionsData = {
+        desaDrawer: ['Binangun', 'Karangsari', 'Jingklak', 'Sibacin', 'Jatiluhur', 'Candisari'],
+        yaTidakDrawer: ['Ya', 'Tidak'],
+        statusBuDrawer: ['PT', 'PP', 'CV', 'Yayasan', 'Koperasi', 'Dana Pensiun', 'Perum / Perumda', 'BUMDes', 'Firma', 'Persekutuan Perdata', 'Badan Usaha Lainnya', 'Bukan BU'],
+        jaringanDrawer: ['Tunggal', 'Kantor Pusat', 'Cabang', 'Perwakilan', 'Pabrik', 'Unit Penunjang'],
+        satuanDrawer: ['m²', 'ubin']
+    };
+    function openDrawer(drawerId, inputTargetId, callback = null) {
+      const opts = optionsData[drawerId];
+      const html = opts.map(o => `<div class="drawer-option" data-val="${o}">${o}</div>`).join('');
+      document.getElementById('drawerOptionsList').innerHTML = html;
+      
+      document.querySelectorAll('.drawer-option').forEach(el => {
+        el.addEventListener('click', function() {
+          const val = this.getAttribute('data-val');
+          document.getElementById(inputTargetId).value = val;
+          document.getElementById(inputTargetId + '_label').innerText = val;
+          document.getElementById(inputTargetId + '_label').classList.replace('text-slate-300', 'text-white');
+          closeAllModals(); history.back();
+          if(callback) callback(val);
+        });
+      });
+      document.getElementById('drawerOverlay').classList.add('active'); 
+      document.getElementById('drawerContent').classList.add('active');
+      history.pushState({modal: 'drawer'}, ''); 
+    }
+    document.getElementById('drawerOverlay').addEventListener('click', () => { closeAllModals(); history.back(); });
+
+    function toggleNibField(val) {
+        if(val === 'Ya') document.getElementById('fieldNoNib').classList.remove('hidden');
+        else { document.getElementById('fieldNoNib').classList.add('hidden'); document.getElementsByName('no_nib')[0].value = ''; }
+    }
+    function togglePusatField(val) {
+        if(['Cabang', 'Perwakilan', 'Pabrik', 'Unit Penunjang'].includes(val)) document.getElementById('fieldKantorPusat').classList.remove('hidden');
+        else { 
+            document.getElementById('fieldKantorPusat').classList.add('hidden'); 
+            document.getElementsByName('nama_kantor_pusat')[0].value = '';
+            document.getElementsByName('alamat_kantor_pusat')[0].value = '';
+            document.getElementsByName('email_kantor_pusat')[0].value = '';
+        }
     }
 
-    // Hapus draft dari riwayat ketika dilanjutkan
-    window.loadDraftLokal = function(id) {
-       let arr = JSON.parse(localStorage.getItem('recent_submissions') || '[]');
-       const dataObj = arr.find(h => h.id === id); if(!dataObj || !dataObj.payload) return;
-       
-       // Hapus item dari riwayat lokal
-       arr = arr.filter(h => h.id !== id);
-       localStorage.setItem('recent_submissions', JSON.stringify(arr));
-       renderRecentHistory();
+    // --- NAVIGASI STEP FORM ---
+    function showStep(step, push = true) {
+        document.querySelectorAll('.step-content').forEach(el => el.classList.remove('active'));
+        document.getElementById('step' + step).classList.add('active');
+        document.getElementById('scrollArea').scrollTop = 0;
+        if(push) history.pushState({step: step}, '');
+    }
+    function nextStep(current) {
+        if(current < totalSteps) { currentStep = current + 1; showStep(currentStep); }
+    }
+    function prevStep(current) {
+        if(current > 1) history.back(); // menggunakan history api
+    }
 
-       const data = dataObj.payload; document.getElementById('sensusForm').reset(); document.getElementById('sensusId').value = dataObj.id;
-       Object.keys(data).forEach(key => {
-          const el = document.querySelector(`input[name="${key}"], textarea[name="${key}"]`);
-          if(el && key !== 'foto_urls_existing' && key !== 'id' && key !== 'status_data') {
-             el.value = el.dataset.type === 'currency' ? formatRupiah(data[key].toString()) : data[key];
-             const tr = document.querySelector(`.custom-select-trigger[data-target="${key}"]`); if(tr) tr.value = data[key];
-          }
-       });
-       document.getElementById('punyaNib').dispatchEvent(new Event('change')); document.getElementById('jaringanUsaha').dispatchEvent(new Event('change'));
+    // --- FORMAT RUPIAH ---
+    function formatRupiah(angka) {
+      let number_string = angka.replace(/[^,\d]/g, '').toString(),
+          split = number_string.split(','), sisa = split[0].length % 3,
+          rupiah = split[0].substr(0, sisa), ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+      if (ribuan) { let separator = sisa ? '.' : ''; rupiah += separator + ribuan.join('.'); }
+      return rupiah ? 'Rp ' + rupiah : '';
+    }
+    document.querySelectorAll('.rp-input').forEach(el => {
+        el.addEventListener('keyup', function(e) { this.value = formatRupiah(this.value); });
+    });
 
-       const pList = document.getElementById('existingPhotosList'); pList.innerHTML = '';
-       if(dataObj.urls && dataObj.urls !== "-") {
-           dataObj.urls.split(' , \n').forEach(u => {
-               if(u.trim()) pList.innerHTML += `<div class="relative shrink-0 w-12 h-12 pt-1.5"><img src="${u}" class="h-full w-full rounded object-cover border border-slate-700"><button type="button" onclick="this.parentElement.remove()" class="absolute top-0 -right-1 bg-red-600 text-white rounded-full p-0.5"><svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path></svg></button></div>`;
-           });
-           document.getElementById('existingPhotosContainer').classList.remove('hidden');
-       } else document.getElementById('existingPhotosContainer').classList.add('hidden');
-       
-       currentStep = 1; showStep(1, false); showToast('Draft siap diedit.', 'success');
-    };
-
-    window.hapusDraftLokal = function(id, btn) {
-        showConfirm("Hapus Draft?", "Hapus dari HP dan Server?", async () => {
-            const ori = btn.innerText; btn.innerHTML = `${svgSpinner}`; btn.disabled = true;
-            try {
-                const res = await (await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'delete', sheetName: localStorage.getItem('auth_desa'), id: id }) })).json();
-                if(res.status === 'success') {
-                    let arr = JSON.parse(localStorage.getItem('recent_submissions') || '[]');
-                    localStorage.setItem('recent_submissions', JSON.stringify(arr.filter(h => h.id !== id)));
-                    renderRecentHistory(); showToast("Dihapus.", 'success');
-                } else showToast(res.message, 'error');
-            } catch(e) { showToast("Gagal menghapus.", 'error'); } finally { btn.innerText = ori; btn.disabled = false; }
+    // --- INPUT FOTO (KAMERA/GALERI -> BASE64) ---
+    function handleFiles(files) {
+        for (let i = 0; i < files.length; i++) {
+            let file = files[i];
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let base64String = e.target.result.split(',')[1];
+                selectedFiles.push({ name: file.name, mimeType: file.type, base64: base64String, dataUrl: e.target.result });
+                renderPreview();
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+    function renderPreview() {
+        const container = document.getElementById('previewContainer');
+        container.innerHTML = '';
+        selectedFiles.forEach((file, index) => {
+            const div = document.createElement('div'); div.className = 'relative rounded-lg overflow-hidden border border-slate-600 bg-slate-800';
+            div.innerHTML = `
+                <img src="${file.dataUrl}" class="w-full h-24 object-cover">
+                <button type="button" onclick="removeFile(${index})" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow">✕</button>
+            `;
+            container.appendChild(div);
         });
-    };
+    }
+    function removeFile(index) { selectedFiles.splice(index, 1); renderPreview(); }
+    
+    // Hapus foto lama saat edit draft
+    window.removeOldPic = function(btnElement, urlTarget) {
+        btnElement.parentElement.remove();
+        let existingUrls = document.getElementById('foto_urls_existing').value;
+        if(existingUrls !== '-' && existingUrls !== '') {
+            let arr = existingUrls.split(' , \n');
+            arr = arr.filter(u => u !== urlTarget);
+            document.getElementById('foto_urls_existing').value = arr.length > 0 ? arr.join(' , \n') : '-';
+        }
+    }
 
-    window.lihatDetailLokal = function(id) {
-        const dataObj = JSON.parse(localStorage.getItem('recent_submissions') || '[]').find(h => h.id === id); if(!dataObj) return;
-        renderDetailModal(dataObj.payload || {}, dataObj.urls);
-    };
+    // --- SIMPAN DATA (DRAFT / FINAL) ---
+    async function saveData(status_data) {
+        const form = document.getElementById('sensusForm');
+        
+        // VALIDASI KETAT JIKA FINAL
+        if (status_data === 'Final') {
+            const reqs = [
+                {n: 'nama_badan_usaha', t: 'Nama Badan Usaha'}, {n: 'alamat_lengkap', t: 'Alamat'}, {n: 'nama_pj', t: 'Nama PJ'},
+                {n: 'nik_pj', t: 'NIK PJ'}, {n: 'email', t: 'Email'}, {n: 'no_wa', t: 'No WA'}, {n: 'tahun_beroperasi', t: 'Tahun Beroperasi'},
+                {n: 'punya_nib', t: 'Punya NIB'}, {n: 'status_badan_usaha', t: 'Status Usaha'}, {n: 'laporan_keuangan', t: 'Lap. Keuangan'},
+                {n: 'produk_utama', t: 'Produk Utama'}, {n: 'jaringan_usaha', t: 'Jaringan Usaha'}, {n: 'terlibat_kmp', t: 'KMP'}, {n: 'terlibat_mbg', t: 'MBG'}
+            ];
+            for (let i = 0; i < reqs.length; i++) {
+                if(!form.elements[reqs[i].n].value) {
+                    showToast("Harap isi: " + reqs[i].t);
+                    let targetStep = 1; // cari step mana elemen itu berada
+                    if(['laporan_keuangan', 'produk_utama', 'jaringan_usaha', 'terlibat_kmp', 'terlibat_mbg'].includes(reqs[i].n)) targetStep = 2;
+                    if(currentStep !== targetStep) showStep(targetStep);
+                    form.elements[reqs[i].n].focus();
+                    return;
+                }
+            }
+        }
 
-    function renderDetailModal(data, urls) {
-        const c = document.getElementById('detailModalContent'); let html = '';
-        Object.keys(data).forEach(key => {
-            if(!['id','status_data','foto_urls_existing','foto_nib'].includes(key) && typeof data[key] !== 'object') {
-                let v = data[key] || '-'; if((key.includes('pengeluaran') || key.includes('pendapatan') || key.includes('aset')) && v !== '-') v = formatRupiah(v.toString());
-                html += `<div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/50"><p class="text-[8px] text-slate-400 font-bold mb-1 uppercase tracking-wider">${key.replace(/_/g, ' ')}</p><p class="text-[11px] font-medium text-slate-200">${v}</p></div>`;
+        const btnDraft = document.getElementById('btnSaveDraft');
+        const btnFinal = document.getElementById('btnSubmitFinal');
+        const originalDraft = btnDraft.innerText; const originalFinal = btnFinal.innerText;
+        
+        btnDraft.disabled = true; btnFinal.disabled = true;
+        if(status_data === 'Draft') btnDraft.innerHTML = '<span class="loader"></span> Proses...';
+        else btnFinal.innerHTML = '<span class="loader"></span> Mengirim...';
+
+        const formData = new FormData(form);
+        const dataObj = {};
+        formData.forEach((value, key) => {
+            if (['pengeluaran_gaji', 'pengeluaran_produksi', 'pengeluaran_operasional', 'pengeluaran_non_operasional', 'pendapatan_barang_jasa', 'pendapatan_lainnya', 'aset_tanah_bangunan', 'aset_non_tanah'].includes(key)) {
+                dataObj[key] = value ? value.replace(/[^0-9]/g, '') : 0;
+            } else {
+                dataObj[key] = value || '';
             }
         });
-        if(urls && urls !== "-") {
-           html += `<div class="bg-slate-800/80 p-3 rounded-xl border border-slate-700/50 col-span-full"><p class="text-[8px] text-slate-400 font-bold mb-2 uppercase">FOTO NIB</p><div class="flex flex-col gap-2">`;
-           urls.split(' , \n').forEach(u => { if(u.trim()) html += `<img src="${u}" class="w-full rounded-lg border border-slate-600/50">`; });
-           html += `</div></div>`;
+        
+        dataObj.status_data = status_data;
+        const auth = JSON.parse(localStorage.getItem('auth_petugas'));
+
+        const payload = {
+            action: 'save',
+            sheetName: auth.desa,
+            data: dataObj,
+            files: selectedFiles.map(f => ({ name: f.name, mimeType: f.mimeType, base64: f.base64 }))
+        };
+
+        try {
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            // Karena no-cors, kita asumsikan sukses jika tidak error. 
+            // Kita simpan ke Local Storage riwayatnya.
+            let locals = JSON.parse(localStorage.getItem(LOCAL_DRAFT_KEY) || '[]');
+            
+            // Generate temporary ID if new
+            const finalId = dataObj.id_sensus || ('LOKAL-' + Date.now());
+            dataObj.id_sensus = finalId;
+            dataObj.waktu = new Date().toLocaleString('id-ID');
+            
+            // Simpan fake photo urls untuk tampilan riwayat lokal sementara
+            const fakeUrls = selectedFiles.map(f => f.dataUrl);
+            const existUrls = dataObj.foto_urls_existing !== '-' ? dataObj.foto_urls_existing.split(' , \n') : [];
+            dataObj.local_photos = [...existUrls, ...fakeUrls];
+
+            const existIndex = locals.findIndex(x => x.id_sensus === finalId);
+            if(existIndex > -1) locals[existIndex] = dataObj;
+            else locals.unshift(dataObj);
+            
+            localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(locals));
+            
+            showToast(status_data === 'Draft' ? 'Draft Disimpan' : 'Data Final Terkirim');
+            
+            // RESET FORM SELESAI
+            form.reset();
+            document.getElementById('id_sensus').value = '';
+            document.getElementById('foto_urls_existing').value = '-';
+            selectedFiles = []; renderPreview(); document.getElementById('oldPreviewContainer').innerHTML = '';
+            
+            // Reset Label Drawer
+            document.querySelectorAll('span[id$="_label"]').forEach(el => {
+                const id = el.id;
+                if(id === 'satuan_luas_label') el.innerText = 'm²';
+                else if(id === 'login_desa_label') {} // skip login
+                else { el.innerText = '-- Pilih --'; el.classList.replace('text-white', 'text-slate-300'); }
+            });
+            document.getElementById('fieldNoNib').classList.add('hidden');
+            document.getElementById('fieldKantorPusat').classList.add('hidden');
+            
+            renderLocalHistory();
+            showStep(1); // kembali ke step awal
+            
+        } catch(e) {
+            showToast('Gagal koneksi server!');
+        } finally {
+            btnDraft.disabled = false; btnFinal.disabled = false;
+            btnDraft.innerText = originalDraft; btnFinal.innerText = originalFinal;
         }
-        c.innerHTML = `<div class="grid grid-cols-2 gap-2 pb-6">${html}</div>`;
-        history.pushState({modal: 'detail'}, '');
-        document.getElementById('detailModal').classList.remove('hidden'); setTimeout(() => document.getElementById('detailModal').classList.add('flex'), 10);
     }
-    document.getElementById('btnCloseDetail').addEventListener('click', () => history.back());
 
-    // --- SIDEBAR & PASSWORD GLOBAL (HANYA ADMIN) ---
-    let pendingDetailId = null;
-    let pendingDetailSheet = null;
+    // --- RIWAYAT LOKAL BAWAH ---
+    function renderLocalHistory() {
+        const locals = JSON.parse(localStorage.getItem(LOCAL_DRAFT_KEY) || '[]');
+        const container = document.getElementById('localHistoryContainer');
+        if(locals.length === 0) {
+             container.innerHTML = '<div class="text-center text-slate-500 text-xs py-4">Belum ada riwayat pendataan.</div>'; return;
+        }
+        container.innerHTML = locals.map(item => {
+            const isDraft = item.status_data === 'Draft';
+            const color = isDraft ? 'border-amber-500/50 bg-amber-900/10' : 'border-emerald-500/50 bg-emerald-900/10';
+            const badge = isDraft ? '<span class="bg-amber-600 text-white text-[0.6rem] px-2 py-0.5 rounded uppercase">Draft</span>' 
+                                  : '<span class="bg-emerald-600 text-white text-[0.6rem] px-2 py-0.5 rounded uppercase">Final</span>';
+            
+            // Cek jika ada foto lokal
+            let photoThumb = '';
+            if(item.local_photos && item.local_photos.length > 0) {
+                 photoThumb = `<img src="${item.local_photos[0]}" class="w-12 h-12 rounded object-cover border border-slate-700">`;
+            }
 
-    // Digunakan juga untuk Gembok di Publik
+            return `
+            <div class="p-3 border rounded-xl flex gap-3 items-center ${color}">
+                ${photoThumb}
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2 mb-1">
+                        <div class="font-bold text-slate-200 text-sm truncate">${item.nama_badan_usaha || 'Tanpa Nama'}</div>
+                        ${badge}
+                    </div>
+                    <div class="text-xs text-slate-400">${item.waktu}</div>
+                </div>
+                <div class="flex flex-col gap-1 shrink-0">
+                    ${isDraft ? `
+                        <button onclick="editLocalDraft('${item.id_sensus}')" class="bg-blue-600 hover:bg-blue-500 text-white text-xs py-1 px-3 rounded shadow">✏️ Edit</button>
+                        <button onclick="deleteLocalDraft('${item.id_sensus}')" class="bg-red-600 hover:bg-red-500 text-white text-xs py-1 px-3 rounded shadow">🗑 Hapus</button>
+                    ` : `
+                        <button onclick="viewDetailLocal('${item.id_sensus}')" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs py-1.5 px-3 rounded shadow font-bold">👁 Lihat Final</button>
+                    `}
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    function deleteLocalDraft(id) {
+        showConfirm('Hapus Draft?', 'Draft akan dihapus dari HP dan Server permanen.', async () => {
+            let locals = JSON.parse(localStorage.getItem(LOCAL_DRAFT_KEY) || '[]');
+            locals = locals.filter(x => x.id_sensus !== id);
+            localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(locals));
+            renderLocalHistory();
+            
+            if(!id.startsWith('LOKAL-')) { // Kalau sudah punya ID server, hapus di server
+                const auth = JSON.parse(localStorage.getItem('auth_petugas'));
+                try {
+                    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'delete', sheetName: auth.desa, id: id }) });
+                } catch(e) {}
+            }
+        });
+    }
+
+    function editLocalDraft(id) {
+        let locals = JSON.parse(localStorage.getItem(LOCAL_DRAFT_KEY) || '[]');
+        const data = locals.find(x => x.id_sensus === id);
+        if(!data) return;
+
+        const form = document.getElementById('sensusForm');
+        Object.keys(data).forEach(key => {
+            const field = form.elements[key];
+            if(field) {
+                if(field.classList.contains('rp-input')) field.value = formatRupiah(data[key].toString());
+                else field.value = data[key];
+            }
+            // Update labels for dropdowns
+            const labelEl = document.getElementById(key + '_label');
+            if(labelEl && data[key]) {
+                labelEl.innerText = data[key]; labelEl.classList.replace('text-slate-300', 'text-white');
+            }
+        });
+        toggleNibField(data.punya_nib); togglePusatField(data.jaringan_usaha);
+        
+        // Hapus dari riwayat (pindah ke meja kerja)
+        locals = locals.filter(x => x.id_sensus !== id);
+        localStorage.setItem(LOCAL_DRAFT_KEY, JSON.stringify(locals));
+        renderLocalHistory();
+
+        // Render foto lama jika ada
+        const oldCont = document.getElementById('oldPreviewContainer');
+        oldCont.innerHTML = '';
+        if(data.local_photos && data.local_photos.length > 0) {
+            // Update value foto_urls_existing yg hidden (anggap local_photos = URL yg udh ada)
+            // Asumsi: jika URL asli drive, kita simpan kembali. Jika dataUrl fake, abaikan.
+            let validUrls = data.local_photos.filter(u => u.startsWith('http'));
+            document.getElementById('foto_urls_existing').value = validUrls.length > 0 ? validUrls.join(' , \n') : '-';
+            
+            data.local_photos.forEach(url => {
+                 oldCont.innerHTML += `
+                 <div class="relative rounded-lg overflow-hidden border border-slate-600 bg-slate-800">
+                    <img src="${url}" class="w-full h-24 object-cover">
+                    <button type="button" onclick="removeOldPic(this, '${url}')" class="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow">✕</button>
+                 </div>`;
+            });
+        }
+        
+        showStep(1); showToast('Draft dimuat, silakan lanjutkan.');
+    }
+
+    function viewDetailLocal(id) {
+        let locals = JSON.parse(localStorage.getItem(LOCAL_DRAFT_KEY) || '[]');
+        const data = locals.find(x => x.id_sensus === id);
+        if(!data) return;
+        
+        let html = '';
+        Object.keys(data).forEach(k => {
+            if(!['id_sensus', 'status_data', 'local_photos', 'foto_urls_existing', 'waktu'].includes(k)) {
+                let val = data[k] || '-';
+                if(['pengeluaran_gaji', 'pengeluaran_produksi', 'pengeluaran_operasional', 'pengeluaran_non_operasional', 'pendapatan_barang_jasa', 'pendapatan_lainnya', 'aset_tanah_bangunan', 'aset_non_tanah'].includes(k)) {
+                     val = formatRupiah(val.toString());
+                }
+                html += `<div class="border-b border-slate-800 pb-2"><div class="text-[0.65rem] text-slate-500 uppercase tracking-wider">${k.replace(/_/g, ' ')}</div><div class="text-slate-200 text-sm font-medium mt-0.5">${val}</div></div>`;
+            }
+        });
+
+        if(data.local_photos && data.local_photos.length > 0) {
+            html += `<div class="mt-4"><div class="text-[0.65rem] text-slate-500 uppercase tracking-wider mb-2">Foto NIB</div><div class="grid grid-cols-2 gap-2">`;
+            data.local_photos.forEach(url => { html += `<img src="${url}" class="w-full h-32 object-cover rounded-lg border border-slate-700">`; });
+            html += `</div></div>`;
+        }
+
+        document.getElementById('detailContent').innerHTML = html;
+        document.getElementById('detailTitle').innerText = data.nama_badan_usaha || 'Rincian';
+        
+        history.pushState({modal: 'detail'}, '');
+        document.getElementById('detailModal').classList.remove('hidden'); 
+        setTimeout(() => document.getElementById('detailModal').classList.remove('translate-y-full'), 10);
+    }
+    
+    document.getElementById('btnCloseDetail').addEventListener('click', () => { closeAllModals(); history.back(); });
+
+    // --- SIDEBAR GLOBAL / ADMIN ---
     window.promptDetailGlobal = function(id, sheetTarget) {
         pendingDetailId = id; pendingDetailSheet = sheetTarget;
         history.pushState({modal: 'password'}, '');
@@ -780,55 +879,85 @@
         document.getElementById('inputAdminPass').value = ''; document.getElementById('errAdminPass').classList.add('hidden');
     };
 
-    document.getElementById('btnOpenSidebar').addEventListener('click', () => promptDetailGlobal('SIDEBAR', localStorage.getItem('auth_desa')));
-    document.getElementById('btnCancelAdmin').addEventListener('click', () => history.back());
+    document.getElementById('btnOpenSidebar').addEventListener('click', () => promptDetailGlobal('SIDEBAR', JSON.parse(localStorage.getItem('auth_petugas')).desa));
+    document.getElementById('btnCancelAdmin').addEventListener('click', () => { closeAllModals(); history.back(); });
 
     document.getElementById('btnSubmitAdmin').addEventListener('click', () => {
-       const pass = document.getElementById('inputAdminPass').value; if(!pass) return;
-       const btn = document.getElementById('btnSubmitAdmin'); btn.innerHTML = `${svgSpinner} Cek...`; btn.disabled = true;
-
+       const pass = document.getElementById('inputAdminPass').value;
+       const btn = document.getElementById('btnSubmitAdmin');
+       if(!pass) return;
+       btn.innerHTML = '<span class="loader"></span>'; btn.disabled = true;
+       
        fetch(`${SCRIPT_URL}?sheetName=${pendingDetailSheet}&password=${encodeURIComponent(pass)}`)
        .then(r => r.json()).then(res => {
            if(res.status === 'success') {
-               document.getElementById('adminModalBox').classList.add('scale-95');
-               setTimeout(() => { 
-                  document.getElementById('adminPasswordModal').classList.add('hidden');
-                  serverDataCache = res.data.reverse();
-                  if(pendingDetailId === 'SIDEBAR') {
-                      history.pushState({sidebar: 'open'}, '');
-                      document.getElementById('sidebarHistory').classList.remove('-translate-x-full'); 
-                      renderServerHistory(serverDataCache);
-                  } else {
-                      const tgt = serverDataCache.find(d => d.id === pendingDetailId);
-                      if(tgt) renderDetailModal(tgt, tgt.foto_nib);
-                  }
-               }, 200);
-           } else { document.getElementById('errAdminPass').innerText = "Password Salah!"; document.getElementById('errAdminPass').classList.remove('hidden'); }
+               closeAllModals(); history.back();
+               serverDataCache = res.data.reverse();
+               if(pendingDetailId === 'SIDEBAR') {
+                   history.pushState({modal: 'sidebar'}, '');
+                   document.getElementById('sidebarHistory').classList.remove('-translate-x-full');
+                   renderServerHistory(serverDataCache);
+               } else {
+                   // Buka detail dari Publik Modal (Global)
+                   const d = serverDataCache.find(x => x.id === pendingDetailId);
+                   if(d) viewDetailServer(d);
+               }
+           } else {
+               document.getElementById('errAdminPass').innerText = res.message; document.getElementById('errAdminPass').classList.remove('hidden');
+           }
        })
-       .catch(e => { document.getElementById('errAdminPass').innerText = "Gangguan Jaringan!"; document.getElementById('errAdminPass').classList.remove('hidden'); })
-       .finally(() => { btn.innerText = "VERIFIKASI"; btn.disabled = false; });
+       .catch(e => { document.getElementById('errAdminPass').innerText = "Gangguan!"; document.getElementById('errAdminPass').classList.remove('hidden'); })
+       .finally(() => { btn.innerText = "Buka"; btn.disabled = false; });
     });
-    document.getElementById('btnCloseSidebar').addEventListener('click', () => history.back());
+    
+    document.getElementById('btnCloseSidebar').addEventListener('click', () => { closeAllModals(); history.back(); });
 
     function renderServerHistory(data) {
-       const list = document.getElementById('serverHistoryList'); list.innerHTML = '';
-       if(data.length === 0) { list.innerHTML = '<p class="text-center text-slate-500 text-[10px] mt-10">Database kosong.</p>'; return; }
-       data.forEach(item => {
-          let photoHtml = '';
-          if(item.foto_nib && item.foto_nib !== "-") {
-             const urls = item.foto_nib.split(' , \n');
-             if(urls[0].trim()) { photoHtml = `<div class="mt-2 flex gap-2 overflow-x-auto pb-1 snap-x">`; urls.forEach(u => { if(u.trim()) photoHtml += `<img src="${u}" class="h-10 w-10 rounded object-cover border border-slate-700">`; }); photoHtml += `</div>`; }
-          }
-          list.innerHTML += `
-            <div class="bg-slate-900/80 p-3 rounded-2xl border border-slate-800/50 shadow-sm">
-              <div class="flex justify-between items-start mb-1">
-                 <div class="pr-2"><p class="font-bold text-white text-[11px]">${item.nama_badan_usaha}</p><p class="text-[9px] text-slate-400 mt-0.5">RT ${item.rt}/RW ${item.rw} - ${item.nama_pj}</p></div>
-                 <span class="text-[8px] font-black px-1.5 py-1 rounded shadow-inner ${item.status_data==='Final'?'bg-emerald-900/60 text-emerald-400':'bg-amber-900/60 text-amber-400'}">${item.status_data==='Final'?'FINAL':'DRAFT'}</span>
-              </div>
-              ${photoHtml}
-              <button onclick="renderDetailModal(serverDataCache.find(d => d.id === '${item.id}'), '${item.foto_nib}')" class="mt-2 w-full bg-blue-600/20 text-blue-400 border border-blue-600/30 py-2 rounded-xl text-[9px] font-bold">Rincian Data</button>
-            </div>`;
-       });
+        const container = document.getElementById('globalHistoryContainer');
+        if(data.length === 0) return container.innerHTML = '<div class="text-slate-500 text-center text-sm mt-5">Data kosong di server.</div>';
+        
+        container.innerHTML = data.map(item => {
+            const st = item.status_data || '';
+            const isDraft = st.toLowerCase().includes('draft');
+            const b = isDraft ? '<span class="text-[0.6rem] bg-amber-600/30 text-amber-400 px-2 py-0.5 rounded border border-amber-500/50">DRAFT (Process)</span>' : '<span class="text-[0.6rem] bg-emerald-600/30 text-emerald-400 px-2 py-0.5 rounded border border-emerald-500/50">FINAL (Confirm)</span>';
+            return `
+            <div class="bg-slate-800 p-3 rounded-lg border border-slate-700">
+               <div class="flex justify-between items-start mb-2">
+                  <div class="font-bold text-slate-200 text-sm">${item.nama_badan_usaha}</div>
+                  ${b}
+               </div>
+               <div class="text-[0.65rem] text-slate-400 mb-2">RT ${item.rt} / RW ${item.rw} | ${item.timestamp ? new Date(item.timestamp).toLocaleString('id-ID') : ''}</div>
+               <button onclick='viewDetailServer(${JSON.stringify(item).replace(/'/g, "&apos;")})' class="w-full bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 border border-blue-500/50 py-1.5 rounded text-xs font-bold transition">👁 Lihat Rincian Data</button>
+            </div>
+            `;
+        }).join('');
+    }
+
+    document.getElementById('searchGlobal').addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        renderServerHistory(serverDataCache.filter(item => item.nama_badan_usaha.toLowerCase().includes(q) || item.rt.toString().includes(q) || item.rw.toString().includes(q)));
+    });
+
+    window.viewDetailServer = function(data) {
+        let html = '';
+        Object.keys(data).forEach(k => {
+            if(!['id', 'foto_nib'].includes(k)) {
+                let val = data[k] || '-';
+                if(k.includes('pengeluaran') || k.includes('pendapatan') || k.includes('aset')) val = formatRupiah(val.toString());
+                html += `<div class="border-b border-slate-800 pb-2"><div class="text-[0.65rem] text-slate-500 uppercase tracking-wider">${k.replace(/_/g, ' ')}</div><div class="text-slate-200 text-sm font-medium mt-0.5">${val}</div></div>`;
+            }
+        });
+        if(data.foto_nib && data.foto_nib !== '-') {
+            html += `<div class="mt-4"><div class="text-[0.65rem] text-slate-500 uppercase tracking-wider mb-2">Foto NIB</div><div class="grid grid-cols-1 gap-2">`;
+            data.foto_nib.split(' , \n').forEach(url => { html += `<img src="${url}" class="w-full h-48 object-cover rounded-lg border border-slate-700">`; });
+            html += `</div></div>`;
+        }
+        document.getElementById('detailContent').innerHTML = html;
+        document.getElementById('detailTitle').innerText = data.nama_badan_usaha || 'Rincian Data Server';
+        
+        history.pushState({modal: 'detail'}, '');
+        document.getElementById('detailModal').classList.remove('hidden'); 
+        setTimeout(() => document.getElementById('detailModal').classList.remove('translate-y-full'), 10);
     }
   </script>
 </body>
